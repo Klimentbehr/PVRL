@@ -58,8 +58,8 @@ namespace Main
             {
                 ArmorType type = (ArmorType)random.Next(2);
                 string id = GeneratePartID();
-                string material = SelectRandomMaterial();
-                int defense = random.Next(10, 51);
+                string material = SelectRandomMaterial(out int defenseModifier);
+                int defense = random.Next(10, 51) + defenseModifier;
                 float weight = (float)(random.NextDouble() * 10.0);
                 int price = defense * 100;
 
@@ -68,10 +68,29 @@ namespace Main
             return armors;
         }
 
-        private static string SelectRandomMaterial()
+        private static string SelectRandomMaterial(out int defenseModifier)
         {
             string[] materials = { "Kevlar", "Steel", "Titanium", "Carbon Fiber" };
-            return materials[random.Next(materials.Length)];
+            string selectedMaterial = materials[random.Next(materials.Length)];
+            switch (selectedMaterial)
+            {
+                case "Kevlar":
+                    defenseModifier = 0;
+                    break;
+                case "Steel":
+                    defenseModifier = 10;
+                    break;
+                case "Titanium":
+                    defenseModifier = 20;
+                    break;
+                case "Carbon Fiber":
+                    defenseModifier = 30;
+                    break;
+                default:
+                    defenseModifier = 0;
+                    break;
+            }
+            return selectedMaterial;
         }
     }
 }

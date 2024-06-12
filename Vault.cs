@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Main;
+﻿using Main;
 using Newtonsoft.Json;
 
 public class Vault
@@ -9,6 +6,7 @@ public class Vault
     public List<GunGeneration.Gun> Guns { get; private set; }
     public List<HealingItem> HealingItems { get; private set; }
     public List<ArmorGeneration.Armor> Armors { get; private set; }
+    public List<RepairKit> RepairItems { get; private set; } // Add this line
     public Dictionary<string, Dictionary<string, List<string>>> Parts { get; private set; }
     public const string vaultFilePath = "vault.txt";
 
@@ -17,6 +15,7 @@ public class Vault
         Guns = new List<GunGeneration.Gun>();
         HealingItems = new List<HealingItem>();
         Armors = new List<ArmorGeneration.Armor>();
+        RepairItems = new List<RepairKit>(); // Add this line
         Parts = new Dictionary<string, Dictionary<string, List<string>>>();
         LoadVault();
     }
@@ -54,6 +53,18 @@ public class Vault
     public void RemoveArmor(ArmorGeneration.Armor armor)
     {
         Armors.Remove(armor);
+        SaveVault();
+    }
+
+    public void AddRepairItem(RepairKit repairKit) // Add this method
+    {
+        RepairItems.Add(repairKit);
+        SaveVault();
+    }
+
+    public void RemoveRepairItem(RepairKit repairKit) // Add this method
+    {
+        RepairItems.Remove(repairKit);
         SaveVault();
     }
 
@@ -120,6 +131,7 @@ public class Vault
                 Guns = Guns,
                 HealingItems = HealingItems,
                 Armors = Armors,
+                RepairItems = RepairItems, // Add this line
                 Parts = Parts
             };
 
@@ -129,6 +141,23 @@ public class Vault
         catch (Exception ex)
         {
             Console.WriteLine($"Error saving vault: {ex.Message}");
+        }
+    }
+
+    public void RemovePart(string partType, string partQuality, string part)
+    {
+        if (Parts.ContainsKey(partType) && Parts[partType].ContainsKey(partQuality))
+        {
+            Parts[partType][partQuality].Remove(part);
+            if (Parts[partType][partQuality].Count == 0)
+            {
+                Parts[partType].Remove(partQuality);
+                if (Parts[partType].Count == 0)
+                {
+                    Parts.Remove(partType);
+                }
+            }
+            SaveVault();
         }
     }
 
@@ -143,6 +172,7 @@ public class Vault
                 Guns = JsonConvert.DeserializeObject<List<GunGeneration.Gun>>(vaultData.Guns.ToString()) ?? new List<GunGeneration.Gun>();
                 HealingItems = JsonConvert.DeserializeObject<List<HealingItem>>(vaultData.HealingItems.ToString()) ?? new List<HealingItem>();
                 Armors = JsonConvert.DeserializeObject<List<ArmorGeneration.Armor>>(vaultData.Armors.ToString()) ?? new List<ArmorGeneration.Armor>();
+                RepairItems = JsonConvert.DeserializeObject<List<RepairKit>>(vaultData.RepairItems.ToString()) ?? new List<RepairKit>(); // Add this line
                 Parts = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(vaultData.Parts.ToString()) ?? new Dictionary<string, Dictionary<string, List<string>>>();
             }
         }
@@ -152,6 +182,7 @@ public class Vault
             Guns = new List<GunGeneration.Gun>();
             HealingItems = new List<HealingItem>();
             Armors = new List<ArmorGeneration.Armor>();
+            RepairItems = new List<RepairKit>(); // Add this line
             Parts = new Dictionary<string, Dictionary<string, List<string>>>();
         }
     }

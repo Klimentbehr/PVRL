@@ -26,7 +26,7 @@ namespace PVRL
         private void GenerateGun()
         {
             GunGeneration gunGen = new GunGeneration();
-            currentGun = gunGen.GenerateRandomGun(Main.DifficultyLevel.Normal); // Assuming Normal difficulty for character creation
+            currentGun = gunGen.GenerateStartingGun(); // Generate a weak starting gun with poor parts
             generatedGunLabel.Text = $"Generated Gun: {currentGun}";
         }
 

@@ -340,6 +340,67 @@ namespace Main
                 price);
         }
 
+        public Gun GenerateStartingGun()
+        {
+            GunOrigin origin = GunOrigin.Civilian; // Starting guns are civilian
+            GunType type = (GunType)random.Next(3);
+            string id = GeneratePartID();
+
+            string qualityDescriptor = "Poor"; // Ensure all parts are "Poor" quality
+
+            string upperReceiver = GeneratePartID() + "." + qualityDescriptor;
+            string barrel = GeneratePartID() + "." + qualityDescriptor;
+            string lowerReceiver = GeneratePartID() + "." + qualityDescriptor;
+            string bufferTube = GeneratePartID() + "." + qualityDescriptor;
+            string stock = GeneratePartID() + "." + qualityDescriptor;
+            string grip = GeneratePartID() + "." + qualityDescriptor;
+            string trigger = GeneratePartID() + "." + qualityDescriptor;
+
+            // Calculate the price of the gun based on the parts
+            int price = DeterminePartPrice(qualityDescriptor) * 7; // All parts are "Poor" quality
+
+            // Apply stat bonuses based on quality
+            int baseDamage = 5;
+            int damage = Math.Max(1, baseDamage + DetermineStatBonus(qualityDescriptor)); // Ensure damage doesn't fall below 1
+
+            // Apply caps based on gun type
+            damage = type switch
+            {
+                GunType.Light => Math.Min(damage, 10),
+                GunType.Medium => Math.Min(damage, 20),
+                GunType.Heavy => Math.Min(damage, 30),
+                _ => damage
+            };
+
+            int accuracy = 30 + DetermineStatBonus(qualityDescriptor);
+            accuracy = type switch
+            {
+                GunType.Light => Math.Min(accuracy, 60),
+                GunType.Medium => Math.Min(accuracy, 50),
+                GunType.Heavy => Math.Min(accuracy, 40),
+                _ => accuracy
+            };
+
+            int range = 50 + DetermineStatBonus(qualityDescriptor);
+            int fireRate = 5 + DetermineStatBonus(qualityDescriptor);
+            float weight = 7.0f + (float)random.NextDouble() * 3.0f; // Example base weight
+
+            return new Gun(id, origin, type,
+                upperReceiver,
+                barrel,
+                lowerReceiver,
+                bufferTube,
+                stock,
+                grip,
+                trigger,
+                damage,
+                accuracy,
+                range,
+                fireRate,
+                weight,
+                price);
+        }
+
         private GunOrigin DetermineGunOrigin(DifficultyLevel difficulty)
         {
             switch (difficulty)

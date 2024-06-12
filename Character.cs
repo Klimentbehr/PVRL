@@ -12,13 +12,13 @@ public class Character
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
     public int Health { get; set; }
-    public int MaxHealth { get; set; } // Add MaxHealth property
+    public int MaxHealth { get; set; }
     public int Defense { get; set; }
     public CharacterType Type { get; set; }
     public GunGeneration.Gun Gun { get; set; }
-    public List<GunGeneration.Gun> Inventory { get; set; } // Inventory for storing guns
-    public List<HealingItem> HealingItems { get; set; } // Inventory for storing healing items
-    public List<ArmorGeneration.Armor> Armors { get; set; } // Inventory for storing armors
+    public List<GunGeneration.Gun> Inventory { get; set; }
+    public List<HealingItem> HealingItems { get; set; }
+    public List<ArmorGeneration.Armor> Armors { get; set; }
     public int Wallet { get; set; }
     public int ExperiencePoints { get; set; }
     public int SkillPoints { get; set; }
@@ -41,9 +41,9 @@ public class Character
         ExperiencePoints = 0;
         SkillPoints = 0;
         Level = 1;
-        Inventory = new List<GunGeneration.Gun>(); // Initialize the Inventory list
-        HealingItems = new List<HealingItem>(); // Initialize the HealingItems list
-        Armors = new List<ArmorGeneration.Armor>(); // Initialize the Armors list
+        Inventory = new List<GunGeneration.Gun>();
+        HealingItems = new List<HealingItem>();
+        Armors = new List<ArmorGeneration.Armor>();
     }
 
     public void GainExperience(int points)
@@ -54,7 +54,7 @@ public class Character
             ExperiencePoints -= ExperienceNeededForNextLevel();
             Level++;
             SkillPoints++;
-            IncreaseHealth(); // Increase health with each level up
+            IncreaseHealth();
         }
     }
 
@@ -65,8 +65,8 @@ public class Character
 
     private void IncreaseHealth()
     {
-        MaxHealth += 10; // Increase max health by 10
-        Health = MaxHealth; // Restore health to max health
+        MaxHealth += 10;
+        Health = MaxHealth;
     }
 
     public void UseHealingItem(HealingItem item)
@@ -76,9 +76,9 @@ public class Character
             Health += item.HealAmount;
             if (Health > MaxHealth)
             {
-                Health = MaxHealth; // Ensure health doesn't exceed max health
+                Health = MaxHealth;
             }
-            HealingItems.Remove(item); // Remove the used healing item from the inventory
+            HealingItems.Remove(item);
         }
     }
 

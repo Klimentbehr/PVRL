@@ -25,6 +25,9 @@
         private Button sellArmorButton;
         private Label walletLabel;
         private ListBox armorsListBox;
+        private ListBox repairKitsListBox;
+        private TextBox repairKitDetailsTextBox;
+        private Button buyRepairKitButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -59,6 +62,9 @@
             buyMediumHealingItemButton = new Button();
             buyLargeHealingItemButton = new Button();
             buyFirstRateHealingItemButton = new Button();
+            repairKitsListBox = new ListBox();
+            repairKitDetailsTextBox = new TextBox();
+            buyRepairKitButton = new Button();
             walletLabel = new Label();
             tabControl.SuspendLayout();
             tabGuns.SuspendLayout();
@@ -162,7 +168,7 @@
             tabArmor.Location = new Point(4, 24);
             tabArmor.Name = "tabArmor";
             tabArmor.Padding = new Padding(3);
-            tabArmor.Size = new Size(768, 398);
+            tabArmor.Size = new Size(838, 398);
             tabArmor.TabIndex = 1;
             tabArmor.Text = "Armor";
             tabArmor.UseVisualStyleBackColor = true;
@@ -232,10 +238,13 @@
             tabHealingGear.Controls.Add(buyMediumHealingItemButton);
             tabHealingGear.Controls.Add(buyLargeHealingItemButton);
             tabHealingGear.Controls.Add(buyFirstRateHealingItemButton);
+            tabHealingGear.Controls.Add(repairKitsListBox);
+            tabHealingGear.Controls.Add(repairKitDetailsTextBox);
+            tabHealingGear.Controls.Add(buyRepairKitButton);
             tabHealingGear.Location = new Point(4, 24);
             tabHealingGear.Name = "tabHealingGear";
             tabHealingGear.Padding = new Padding(3);
-            tabHealingGear.Size = new Size(768, 398);
+            tabHealingGear.Size = new Size(838, 398);
             tabHealingGear.TabIndex = 2;
             tabHealingGear.Text = "Healing/Gear";
             tabHealingGear.UseVisualStyleBackColor = true;
@@ -290,6 +299,35 @@
             buyFirstRateHealingItemButton.UseVisualStyleBackColor = true;
             buyFirstRateHealingItemButton.Click += BuyFirstRateHealingItemButton_Click;
             // 
+            // repairKitsListBox
+            // 
+            repairKitsListBox.FormattingEnabled = true;
+            repairKitsListBox.ItemHeight = 15;
+            repairKitsListBox.Location = new Point(368, 6);
+            repairKitsListBox.Name = "repairKitsListBox";
+            repairKitsListBox.Size = new Size(200, 304);
+            repairKitsListBox.TabIndex = 5;
+           // repairKitsListBox.SelectedIndexChanged += repairKitsListBox_SelectedIndexChanged;
+            // 
+            // repairKitDetailsTextBox
+            // 
+            repairKitDetailsTextBox.Location = new Point(574, 6);
+            repairKitDetailsTextBox.Multiline = true;
+            repairKitDetailsTextBox.Name = "repairKitDetailsTextBox";
+            repairKitDetailsTextBox.ReadOnly = true;
+            repairKitDetailsTextBox.Size = new Size(200, 304);
+            repairKitDetailsTextBox.TabIndex = 6;
+            // 
+            // buyRepairKitButton
+            // 
+            buyRepairKitButton.Location = new Point(574, 316);
+            buyRepairKitButton.Name = "buyRepairKitButton";
+            buyRepairKitButton.Size = new Size(75, 23);
+            buyRepairKitButton.TabIndex = 7;
+            buyRepairKitButton.Text = "Buy Repair Kit";
+            buyRepairKitButton.UseVisualStyleBackColor = true;
+           // buyRepairKitButton.Click += BuyRepairKitButton_Click;
+            // 
             // walletLabel
             // 
             walletLabel.AutoSize = true;
@@ -315,6 +353,7 @@
             tabArmor.ResumeLayout(false);
             tabArmor.PerformLayout();
             tabHealingGear.ResumeLayout(false);
+            tabHealingGear.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }

@@ -12,6 +12,7 @@ namespace PVRL
     {
         private List<GunGeneration.Gun> gunsForSale;
         private List<ArmorGeneration.Armor> armorsForSale;
+        private List<RepairKit> repairKitsForSale;
         private Character player;
         private Vault vault;
 
@@ -22,9 +23,11 @@ namespace PVRL
             this.vault = vault;
             LoadGunsForSale();
             LoadArmorsForSale();
+            LoadRepairKitsForSale();
             LoadPlayerGuns();
             LoadPlayerHealingItems();
             LoadPlayerArmors();
+           // LoadPlayerRepairKits();
             UpdateWalletLabel();
         }
 
@@ -46,17 +49,7 @@ namespace PVRL
                 gunsListBox.Items.Clear();
                 foreach (var gun in gunsForSale)
                 {
-                    gunsListBox.Items.Add($"{gun.Name} - Price: {gun.Price}");
-                }
-
-                // Debug information
-                if (gunsForSale.Count == 0)
-                {
-                    MessageBox.Show("No guns loaded for sale.");
-                }
-                else
-                {
-                    MessageBox.Show($"{gunsForSale.Count} guns loaded for sale.");
+                    gunsListBox.Items.Add($"{gun.Name} - Price: {GetBuyingPrice(gun.Price):F2}");
                 }
             }
             catch (Exception ex)
@@ -98,7 +91,6 @@ namespace PVRL
             return guns;
         }
 
-
         private void LoadArmorsForSale()
         {
             try
@@ -108,7 +100,7 @@ namespace PVRL
                 armorsListBox.Items.Clear();
                 foreach (var armor in armorsForSale)
                 {
-                    armorsListBox.Items.Add($"{armor.Name} - Price: {armor.Price}");
+                    armorsListBox.Items.Add($"{armor.Name} - Price: {GetBuyingPrice(armor.Price):F2}");
                 }
             }
             catch (Exception ex)
@@ -117,18 +109,42 @@ namespace PVRL
             }
         }
 
+        private void LoadRepairKitsForSale()
+        {
+            try
+            {
+                repairKitsForSale = new List<RepairKit>
+                {
+                    RepairKitGenerator.GenerateRepairKit("Poor"),
+                    RepairKitGenerator.GenerateRepairKit("Standard"),
+                    RepairKitGenerator.GenerateRepairKit("Superior"),
+                    RepairKitGenerator.GenerateRepairKit("First-rate")
+                };
+
+                repairKitsListBox.Items.Clear();
+                foreach (var repairKit in repairKitsForSale)
+                {
+                    repairKitsListBox.Items.Add($"{repairKit.Name} - Price: {GetBuyingPrice(repairKit.Price):F2}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading repair kits for sale: {ex.Message}");
+            }
+        }
+
         private void LoadPlayerGuns()
         {
             playerGunsListBox.Items.Clear();
             foreach (var gun in player.Inventory)
             {
-                playerGunsListBox.Items.Add($"{gun.Name} - Sell Price: {gun.Price / 2}");
+                playerGunsListBox.Items.Add($"{gun.Name} - Sell Price: {GetSellingPrice(gun.Price):F2}");
             }
 
             // Load guns from the vault as well
             foreach (var gun in vault.Guns)
             {
-                playerGunsListBox.Items.Add($"{gun.Name} - Sell Price: {gun.Price / 2}");
+                playerGunsListBox.Items.Add($"{gun.Name} - Sell Price: {GetSellingPrice(gun.Price):F2}");
             }
         }
 
@@ -147,20 +163,22 @@ namespace PVRL
             }
         }
 
-        public void LoadPlayerArmors()
+        private void LoadPlayerArmors()
         {
             playerArmorsListBox.Items.Clear();
             foreach (var armor in player.Armors)
             {
-                playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {armor.Price / 2}");
+                playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {GetSellingPrice(armor.Price):F2}");
             }
 
             // Load armors from the vault as well
             foreach (var armor in vault.Armors)
             {
-                playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {armor.Price / 2}");
+                playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {GetSellingPrice(armor.Price):F2}");
             }
         }
+
+      
 
         private void gunsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -248,9 +266,11 @@ namespace PVRL
             if (gunsListBox.SelectedIndex >= 0)
             {
                 var selectedGun = gunsForSale[gunsListBox.SelectedIndex];
-                if (player.Wallet >= selectedGun.Price)
+                double finalPrice = GetBuyingPrice(selectedGun.Price);
+
+                if (player.Wallet >= (int)finalPrice)
                 {
-                    player.Wallet -= selectedGun.Price;
+                    player.Wallet -= (int)finalPrice;
                     player.Inventory.Add(selectedGun);
                     gunsForSale.RemoveAt(gunsListBox.SelectedIndex);
                     LoadGunsForSale();
@@ -260,7 +280,7 @@ namespace PVRL
                 }
                 else
                 {
-                    MessageBox.Show("Not enough coins!");
+                    MessageBox.Show("Not enough credits!");
                 }
             }
         }
@@ -291,9 +311,10 @@ namespace PVRL
 
         private void BuyHealingItem(HealingItem item)
         {
-            if (player.Wallet >= item.Price)
+            double finalPrice = GetBuyingPrice(item.Price);
+            if (player.Wallet >= (int)finalPrice)
             {
-                player.Wallet -= item.Price;
+                player.Wallet -= (int)finalPrice;
                 player.HealingItems.Add(item);
                 UpdateWalletLabel();
                 MessageBox.Show($"You bought a {item.Name}!");
@@ -301,9 +322,11 @@ namespace PVRL
             }
             else
             {
-                MessageBox.Show("Not enough coins to buy this item.");
+                MessageBox.Show("Not enough credits to buy this item.");
             }
         }
+
+
 
         private void SellGunButton_Click(object sender, EventArgs e)
         {
@@ -324,7 +347,7 @@ namespace PVRL
                     vault.RemoveGun(selectedGun);
                 }
 
-                player.Wallet += selectedGun.Price / 2;
+                player.Wallet += (int)GetSellingPrice(selectedGun.Price);
                 LoadPlayerGuns(); // Update the player's inventory and vault list
                 UpdateWalletLabel();
                 MessageBox.Show("Gun sold successfully!");
@@ -336,9 +359,11 @@ namespace PVRL
             if (armorsListBox.SelectedIndex >= 0)
             {
                 var selectedArmor = armorsForSale[armorsListBox.SelectedIndex];
-                if (player.Wallet >= selectedArmor.Price)
+                double finalPrice = GetBuyingPrice(selectedArmor.Price);
+
+                if (player.Wallet >= (int)finalPrice)
                 {
-                    player.Wallet -= selectedArmor.Price;
+                    player.Wallet -= (int)finalPrice;
                     player.Armors.Add(selectedArmor);
                     armorsForSale.RemoveAt(armorsListBox.SelectedIndex);
                     LoadArmorsForSale();
@@ -348,7 +373,7 @@ namespace PVRL
                 }
                 else
                 {
-                    MessageBox.Show("Not enough coins!");
+                    MessageBox.Show("Not enough credits!");
                 }
             }
         }
@@ -372,11 +397,28 @@ namespace PVRL
                     vault.RemoveArmor(selectedArmor);
                 }
 
-                player.Wallet += selectedArmor.Price / 2;
+                player.Wallet += (int)GetSellingPrice(selectedArmor.Price);
                 LoadPlayerArmors(); // Update the player's inventory and vault list
                 UpdateWalletLabel();
                 MessageBox.Show("Armor sold successfully!");
             }
+        }
+
+        private double GetCharismaModifier()
+        {
+            return 1 + (player.Charisma * 0.0025);
+        }
+
+        private double GetBuyingPrice(double basePrice)
+        {
+            double modifier = GetCharismaModifier();
+            return basePrice / modifier;
+        }
+
+        private double GetSellingPrice(double basePrice)
+        {
+            double modifier = GetCharismaModifier();
+            return basePrice * modifier;
         }
     }
 }
