@@ -25,9 +25,6 @@
         private Button sellArmorButton;
         private Label walletLabel;
         private ListBox armorsListBox;
-        private ListBox repairKitsListBox;
-        private TextBox repairKitDetailsTextBox;
-        private Button buyRepairKitButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -62,9 +59,6 @@
             buyMediumHealingItemButton = new Button();
             buyLargeHealingItemButton = new Button();
             buyFirstRateHealingItemButton = new Button();
-            repairKitsListBox = new ListBox();
-            repairKitDetailsTextBox = new TextBox();
-            buyRepairKitButton = new Button();
             walletLabel = new Label();
             tabControl.SuspendLayout();
             tabGuns.SuspendLayout();
@@ -238,9 +232,6 @@
             tabHealingGear.Controls.Add(buyMediumHealingItemButton);
             tabHealingGear.Controls.Add(buyLargeHealingItemButton);
             tabHealingGear.Controls.Add(buyFirstRateHealingItemButton);
-            tabHealingGear.Controls.Add(repairKitsListBox);
-            tabHealingGear.Controls.Add(repairKitDetailsTextBox);
-            tabHealingGear.Controls.Add(buyRepairKitButton);
             tabHealingGear.Location = new Point(4, 24);
             tabHealingGear.Name = "tabHealingGear";
             tabHealingGear.Padding = new Padding(3);
@@ -299,35 +290,6 @@
             buyFirstRateHealingItemButton.UseVisualStyleBackColor = true;
             buyFirstRateHealingItemButton.Click += BuyFirstRateHealingItemButton_Click;
             // 
-            // repairKitsListBox
-            // 
-            repairKitsListBox.FormattingEnabled = true;
-            repairKitsListBox.ItemHeight = 15;
-            repairKitsListBox.Location = new Point(368, 6);
-            repairKitsListBox.Name = "repairKitsListBox";
-            repairKitsListBox.Size = new Size(200, 304);
-            repairKitsListBox.TabIndex = 5;
-           // repairKitsListBox.SelectedIndexChanged += repairKitsListBox_SelectedIndexChanged;
-            // 
-            // repairKitDetailsTextBox
-            // 
-            repairKitDetailsTextBox.Location = new Point(574, 6);
-            repairKitDetailsTextBox.Multiline = true;
-            repairKitDetailsTextBox.Name = "repairKitDetailsTextBox";
-            repairKitDetailsTextBox.ReadOnly = true;
-            repairKitDetailsTextBox.Size = new Size(200, 304);
-            repairKitDetailsTextBox.TabIndex = 6;
-            // 
-            // buyRepairKitButton
-            // 
-            buyRepairKitButton.Location = new Point(574, 316);
-            buyRepairKitButton.Name = "buyRepairKitButton";
-            buyRepairKitButton.Size = new Size(75, 23);
-            buyRepairKitButton.TabIndex = 7;
-            buyRepairKitButton.Text = "Buy Repair Kit";
-            buyRepairKitButton.UseVisualStyleBackColor = true;
-           // buyRepairKitButton.Click += BuyRepairKitButton_Click;
-            // 
             // walletLabel
             // 
             walletLabel.AutoSize = true;
@@ -353,7 +315,6 @@
             tabArmor.ResumeLayout(false);
             tabArmor.PerformLayout();
             tabHealingGear.ResumeLayout(false);
-            tabHealingGear.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }

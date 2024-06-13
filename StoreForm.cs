@@ -23,11 +23,11 @@ namespace PVRL
             this.vault = vault;
             LoadGunsForSale();
             LoadArmorsForSale();
-            LoadRepairKitsForSale();
+            //LoadRepairKitsForSale();
             LoadPlayerGuns();
             LoadPlayerHealingItems();
             LoadPlayerArmors();
-           // LoadPlayerRepairKits();
+            // LoadPlayerRepairKits();
             UpdateWalletLabel();
         }
 
@@ -109,30 +109,7 @@ namespace PVRL
             }
         }
 
-        private void LoadRepairKitsForSale()
-        {
-            try
-            {
-                repairKitsForSale = new List<RepairKit>
-                {
-                    RepairKitGenerator.GenerateRepairKit("Poor"),
-                    RepairKitGenerator.GenerateRepairKit("Standard"),
-                    RepairKitGenerator.GenerateRepairKit("Superior"),
-                    RepairKitGenerator.GenerateRepairKit("First-rate")
-                };
-
-                repairKitsListBox.Items.Clear();
-                foreach (var repairKit in repairKitsForSale)
-                {
-                    repairKitsListBox.Items.Add($"{repairKit.Name} - Price: {GetBuyingPrice(repairKit.Price):F2}");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading repair kits for sale: {ex.Message}");
-            }
-        }
-
+     
         private void LoadPlayerGuns()
         {
             playerGunsListBox.Items.Clear();
@@ -178,7 +155,7 @@ namespace PVRL
             }
         }
 
-      
+
 
         private void gunsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
