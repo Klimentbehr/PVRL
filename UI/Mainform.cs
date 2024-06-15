@@ -104,13 +104,7 @@ namespace PVRL
         {
             if (characters.Count > 0)
             {
-                // Assuming the first character in the list is to be managed
-                var firstCharacter = characters[0];
-                this.manageCharacterControl.SetCharacterAndVault(firstCharacter, vault);
-            }
-            else
-            {
-                MessageBox.Show("No characters available to manage.");
+                manageCharacterControl.SetCharacterAndVault(characters[0], vault);
             }
         }
 
@@ -203,11 +197,6 @@ namespace PVRL
             }
         }
 
-        private void generateGunsButton_Click(object sender, EventArgs e)
-        {
-            // Implement the gun generation logic here if needed
-        }
-
         private void MainForm_Resize(object sender, EventArgs e)
         {
             CenterControls();
@@ -220,10 +209,7 @@ namespace PVRL
 
             int buttonWidth = (int)(this.ClientSize.Width * 0.3); // Increase button width
             int buttonHeight = (int)(this.ClientSize.Height * 0.1); // Increase button height
-
-            int totalHeight = buttonHeight * 2; // Total height of all buttons
-            int totalSpacing = this.ClientSize.Height - totalHeight; // Total spacing available
-            int spacing = totalSpacing / 20; // Evenly distribute spacing between buttons
+            int spacing = (int)(buttonHeight * 0.1); // Space between buttons
 
             characterCreationButton.Size = new Size(buttonWidth, buttonHeight);
             manageCharacterButton.Size = new Size(buttonWidth, buttonHeight);
@@ -231,9 +217,9 @@ namespace PVRL
             exitButton.Size = new Size(buttonWidth, buttonHeight);
 
             characterCreationButton.Location = new Point(centerX - buttonWidth / 2, centerY - 2 * buttonHeight - 2 * spacing);
-            manageCharacterButton.Location = new Point(centerX - buttonWidth / 2, centerY - buttonHeight - spacing);
-            pveButton.Location = new Point(centerX - buttonWidth / 2, centerY);
-            exitButton.Location = new Point(centerX - buttonWidth / 2, centerY + buttonHeight + spacing);
+            manageCharacterButton.Location = new Point(centerX - buttonWidth / 2, centerY - buttonHeight / 2 - spacing);
+            pveButton.Location = new Point(centerX - buttonWidth / 2, centerY + buttonHeight + spacing);
+            exitButton.Location = new Point(centerX - buttonWidth / 2, centerY + 2 * buttonHeight + 2 * spacing);
 
             int buttonFontSize = (int)(buttonHeight * 0.25); // Set font size to 25% of button height
             characterCreationButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
@@ -241,9 +227,14 @@ namespace PVRL
             pveButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
             exitButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
 
-            int labelFontSize = (int)(this.ClientSize.Height * 0.035); // Set font size based on window height
+            int labelFontSize = (int)(this.ClientSize.Width * 0.035); // Set font size based on window width
             label1.Font = new Font("Segoe UI", labelFontSize, FontStyle.Regular, GraphicsUnit.Point);
             label1.Location = new Point(centerX - label1.Width / 2, centerY - 3 * buttonHeight - 3 * spacing - label1.Height);
+        }
+
+        public void ReturnToHome()
+        {
+            mainTabControl.SelectedTab = homeTabPage;
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

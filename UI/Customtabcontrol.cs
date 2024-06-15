@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace PVRL
@@ -7,29 +8,31 @@ namespace PVRL
     {
         public CustomTabControl()
         {
-            // Enable double buffering
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
-            this.UpdateStyles();
+            this.DrawMode = TabDrawMode.OwnerDrawFixed;
+            this.DrawItem += new DrawItemEventHandler(CustomTabControl_DrawItem);
+            this.ItemSize = new Size(100, 30); // Adjust size to resemble taskbar items
+            this.SizeMode = TabSizeMode.Fixed; // Ensure fixed size for tabs
+            this.Alignment = TabAlignment.Bottom; // Align tabs at the bottom
         }
 
-        protected override void OnPaint(PaintEventArgs e)
+        private void CustomTabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            base.OnPaint(e);
+            Graphics g = e.Graphics;
+            TabPage tabPage = this.TabPages[e.Index];
+            Rectangle tabRect = this.GetTabRect(e.Index);
 
-            for (int i = 0; i < this.TabPages.Count; i++)
+            // Background
+            if (e.Index == this.SelectedIndex)
             {
-                Rectangle tabRect = this.GetTabRect(i);
-                if (i == this.SelectedIndex)
-                {
-                    e.Graphics.FillRectangle(Brushes.Gray, tabRect);
-                }
-                else
-                {
-                    e.Graphics.FillRectangle(Brushes.LightGray, tabRect);
-                }
-
-                TextRenderer.DrawText(e.Graphics, this.TabPages[i].Text, this.Font, tabRect, this.ForeColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                g.FillRectangle(Brushes.Gray, tabRect); // Selected tab color
             }
+            else
+            {
+                g.FillRectangle(Brushes.DarkGray, tabRect); // Unselected tab color
+            }
+
+            // Text
+            TextRenderer.DrawText(g, tabPage.Text, this.Font, tabRect, Color.White, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
         }
     }
 }

@@ -7,6 +7,7 @@
         private Button skillsButton;
         private Button craftingButton;
         private Button storeButton;
+        private Button returnHomeButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -19,69 +20,86 @@
 
         private void InitializeComponent()
         {
-            this.inventoryButton = new Button();
-            this.skillsButton = new Button();
-            this.craftingButton = new Button();
-            this.storeButton = new Button();
-
-            this.SuspendLayout();
-
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ManageCharacterControl));
+            inventoryButton = new Button();
+            skillsButton = new Button();
+            craftingButton = new Button();
+            storeButton = new Button();
+            returnHomeButton = new Button();
+            SuspendLayout();
             // 
             // inventoryButton
             // 
-            this.inventoryButton.Location = new Point(12, 12);
-            this.inventoryButton.Name = "inventoryButton";
-            this.inventoryButton.Size = new Size(150, 54);
-            this.inventoryButton.TabIndex = 0;
-            this.inventoryButton.Text = "Manage Inventory";
-            this.inventoryButton.UseVisualStyleBackColor = true;
-            this.inventoryButton.Click += new EventHandler(this.InventoryButton_Click);
-
+            inventoryButton.Location = new Point(14, 14);
+            inventoryButton.Margin = new Padding(4, 3, 4, 3);
+            inventoryButton.Name = "inventoryButton";
+            inventoryButton.Size = new Size(175, 62);
+            inventoryButton.TabIndex = 0;
+            inventoryButton.Text = "Manage Inventory";
+            inventoryButton.UseVisualStyleBackColor = true;
+            inventoryButton.Click += InventoryButton_Click;
             // 
             // skillsButton
             // 
-            this.skillsButton.Location = new Point(12, 72);
-            this.skillsButton.Name = "skillsButton";
-            this.skillsButton.Size = new Size(150, 54);
-            this.skillsButton.TabIndex = 1;
-            this.skillsButton.Text = "Manage Skills";
-            this.skillsButton.UseVisualStyleBackColor = true;
-            this.skillsButton.Click += new EventHandler(this.SkillsButton_Click);
-
+            skillsButton.Location = new Point(14, 83);
+            skillsButton.Margin = new Padding(4, 3, 4, 3);
+            skillsButton.Name = "skillsButton";
+            skillsButton.Size = new Size(175, 62);
+            skillsButton.TabIndex = 1;
+            skillsButton.Text = "Manage Skills";
+            skillsButton.UseVisualStyleBackColor = true;
+            skillsButton.Click += SkillsButton_Click;
             // 
             // craftingButton
             // 
-            this.craftingButton.Location = new Point(12, 132);
-            this.craftingButton.Name = "craftingButton";
-            this.craftingButton.Size = new Size(150, 54);
-            this.craftingButton.TabIndex = 2;
-            this.craftingButton.Text = "Crafting";
-            this.craftingButton.UseVisualStyleBackColor = true;
-            this.craftingButton.Click += new EventHandler(this.CraftingButton_Click);
-
+            craftingButton.Location = new Point(14, 152);
+            craftingButton.Margin = new Padding(4, 3, 4, 3);
+            craftingButton.Name = "craftingButton";
+            craftingButton.Size = new Size(175, 62);
+            craftingButton.TabIndex = 2;
+            craftingButton.Text = "Crafting";
+            craftingButton.UseVisualStyleBackColor = true;
+            craftingButton.Click += CraftingButton_Click;
             // 
             // storeButton
             // 
-            this.storeButton.Location = new Point(12, 192);
-            this.storeButton.Name = "storeButton";
-            this.storeButton.Size = new Size(150, 54);
-            this.storeButton.TabIndex = 3;
-            this.storeButton.Text = "Store";
-            this.storeButton.UseVisualStyleBackColor = true;
-            this.storeButton.Click += new EventHandler(this.StoreButton_Click);
-
+            storeButton.Location = new Point(14, 222);
+            storeButton.Margin = new Padding(4, 3, 4, 3);
+            storeButton.Name = "storeButton";
+            storeButton.Size = new Size(175, 62);
+            storeButton.TabIndex = 3;
+            storeButton.Text = "Store";
+            storeButton.UseVisualStyleBackColor = true;
+            storeButton.Click += StoreButton_Click;
+            // 
+            // returnHomeButton
+            // 
+            returnHomeButton.Location = new Point(14, 292);
+            returnHomeButton.Margin = new Padding(4, 3, 4, 3);
+            returnHomeButton.Name = "returnHomeButton";
+            returnHomeButton.Size = new Size(175, 62);
+            returnHomeButton.TabIndex = 4;
+            returnHomeButton.Text = "Return Home";
+            returnHomeButton.UseVisualStyleBackColor = true;
+            returnHomeButton.Click += ReturnHomeButton_Click;
             // 
             // ManageCharacterControl
             // 
-            this.AutoScaleDimensions = new SizeF(6F, 13F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.Controls.Add(this.storeButton);
-            this.Controls.Add(this.craftingButton);
-            this.Controls.Add(this.skillsButton);
-            this.Controls.Add(this.inventoryButton);
-            this.Name = "ManageCharacterControl";
-            this.Size = new Size(200, 260);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
+            BackgroundImageLayout = ImageLayout.Stretch;
+            Controls.Add(storeButton);
+            Controls.Add(craftingButton);
+            Controls.Add(skillsButton);
+            Controls.Add(inventoryButton);
+            Controls.Add(returnHomeButton);
+            DoubleBuffered = true;
+            Margin = new Padding(4, 3, 4, 3);
+            Name = "ManageCharacterControl";
+            Size = new Size(933, 462);
+            Resize += ManageCharacterControl_Resize;
+            ResumeLayout(false);
         }
     }
 }

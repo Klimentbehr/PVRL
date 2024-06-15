@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-
 namespace PVRL
 {
     public partial class InventoryForm : Form
@@ -14,6 +13,7 @@ namespace PVRL
         public InventoryForm(List<Character> characters, Vault vault)
         {
             InitializeComponent();
+            DoubleBuffered = true;
             this.characters = characters;
             this.vault = vault;
             LoadCharacters();
