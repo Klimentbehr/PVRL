@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -21,13 +22,28 @@ namespace PVRL
             InitializeComponent();
             this.player = player;
             this.vault = vault;
+
+            // Set form to fullscreen
+            this.WindowState = FormWindowState.Maximized;
+            this.FormBorderStyle = FormBorderStyle.None;
+
+            // Set background image
+            this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+
+            // Load data
+            LoadStoreData();
+        }
+
+        private void LoadStoreData()
+        {
             LoadGunsForSale();
             LoadArmorsForSale();
-            //LoadRepairKitsForSale();
+            // LoadRepairKitsForSale(); // Uncomment if repair kits are implemented
             LoadPlayerGuns();
             LoadPlayerHealingItems();
             LoadPlayerArmors();
-            // LoadPlayerRepairKits();
+            // LoadPlayerRepairKits(); // Uncomment if repair kits are implemented
             UpdateWalletLabel();
         }
 
@@ -109,7 +125,6 @@ namespace PVRL
             }
         }
 
-
         private void LoadPlayerGuns()
         {
             playerGunsListBox.Items.Clear();
@@ -154,8 +169,6 @@ namespace PVRL
                 playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {GetSellingPrice(armor.Price):F2}");
             }
         }
-
-
 
         private void gunsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -303,8 +316,6 @@ namespace PVRL
             }
         }
 
-
-
         private void SellGunButton_Click(object sender, EventArgs e)
         {
             if (playerGunsListBox.SelectedIndex >= 0)
@@ -397,5 +408,12 @@ namespace PVRL
             double modifier = GetCharismaModifier();
             return basePrice * modifier;
         }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
+
+

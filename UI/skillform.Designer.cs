@@ -53,7 +53,7 @@
             // 
             strengthLabel.AutoSize = true;
             strengthLabel.BackColor = Color.Transparent;
-            strengthLabel.ForeColor = SystemColors.ButtonHighlight;
+            strengthLabel.ForeColor = SystemColors.ButtonFace;
             strengthLabel.Location = new Point(12, 15);
             strengthLabel.Name = "strengthLabel";
             strengthLabel.Size = new Size(55, 15);
@@ -72,7 +72,7 @@
             // 
             dexterityLabel.AutoSize = true;
             dexterityLabel.BackColor = Color.Transparent;
-            dexterityLabel.ForeColor = SystemColors.ButtonHighlight;
+            dexterityLabel.ForeColor = SystemColors.ButtonFace;
             dexterityLabel.Location = new Point(12, 45);
             dexterityLabel.Name = "dexterityLabel";
             dexterityLabel.Size = new Size(57, 15);
@@ -91,7 +91,7 @@
             // 
             intelligenceLabel.AutoSize = true;
             intelligenceLabel.BackColor = Color.Transparent;
-            intelligenceLabel.ForeColor = SystemColors.ButtonHighlight;
+            intelligenceLabel.ForeColor = SystemColors.ButtonFace;
             intelligenceLabel.Location = new Point(12, 75);
             intelligenceLabel.Name = "intelligenceLabel";
             intelligenceLabel.Size = new Size(71, 15);
@@ -110,7 +110,7 @@
             // 
             wisdomLabel.AutoSize = true;
             wisdomLabel.BackColor = Color.Transparent;
-            wisdomLabel.ForeColor = SystemColors.ButtonHighlight;
+            wisdomLabel.ForeColor = SystemColors.ButtonFace;
             wisdomLabel.Location = new Point(12, 105);
             wisdomLabel.Name = "wisdomLabel";
             wisdomLabel.Size = new Size(54, 15);
@@ -129,7 +129,7 @@
             // 
             charismaLabel.AutoSize = true;
             charismaLabel.BackColor = Color.Transparent;
-            charismaLabel.ForeColor = SystemColors.ButtonHighlight;
+            charismaLabel.ForeColor = SystemColors.ButtonFace;
             charismaLabel.Location = new Point(12, 135);
             charismaLabel.Name = "charismaLabel";
             charismaLabel.Size = new Size(60, 15);
@@ -148,7 +148,7 @@
             // 
             pointsLeftLabel.AutoSize = true;
             pointsLeftLabel.BackColor = Color.Transparent;
-            pointsLeftLabel.ForeColor = SystemColors.ButtonHighlight;
+            pointsLeftLabel.ForeColor = SystemColors.ButtonFace;
             pointsLeftLabel.Location = new Point(12, 165);
             pointsLeftLabel.Name = "pointsLeftLabel";
             pointsLeftLabel.Size = new Size(66, 15);

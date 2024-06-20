@@ -97,7 +97,7 @@
             // 
             raceComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             raceComboBox.FormattingEnabled = true;
-            raceComboBox.Items.AddRange(new object[] { "Race 1", "Race 2", "Race 3" });
+            raceComboBox.Items.AddRange(new object[] { "Human", "Synth", "Drone" });
             raceComboBox.Location = new Point(92, 42);
             raceComboBox.Name = "raceComboBox";
             raceComboBox.Size = new Size(120, 23);

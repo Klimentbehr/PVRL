@@ -488,13 +488,21 @@ namespace PVRL
         {
             if (!playerFled && player.Health > 0 && enemies.Any(e => e.Health > 0))
             {
-                MessageBox.Show("You cannot close the combat form without fleeing.");
-                e.Cancel = true;
+                // Charge 150 credits if the player closes the form while combat is active
+                if (player.Wallet >= 150)
+                {
+                    player.Wallet -= 150;
+                    MessageBox.Show("You have been charged 150 credits for leaving combat.");
+                }
+                else
+                {
+                    MessageBox.Show("You don't have enough credits to leave combat.");
+                    e.Cancel = true;
+                    return;
+                }
+                SaveCharacter(player);
             }
-            else
-            {
-                combatFormOpen = false;
-            }
+            combatFormOpen = false;
         }
 
         private void EnemySelectionComboBox_SelectedIndexChanged(object sender, EventArgs e)

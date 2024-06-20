@@ -10,6 +10,11 @@ namespace PVRL
         private Character character;
         private Vault vault;
 
+        public event EventHandler InventoryButtonClicked;
+        public event EventHandler SkillsButtonClicked;
+        public event EventHandler CraftingButtonClicked;
+        public event EventHandler StoreButtonClicked;
+
         public ManageCharacterControl()
         {
             InitializeComponent();
@@ -25,26 +30,22 @@ namespace PVRL
 
         private void InventoryButton_Click(object sender, EventArgs e)
         {
-            InventoryForm inventoryForm = new InventoryForm(new List<Character> { character }, vault);
-            inventoryForm.ShowDialog();
+            InventoryButtonClicked?.Invoke(this, e);
         }
 
         private void SkillsButton_Click(object sender, EventArgs e)
         {
-            SkillForm skillForm = new SkillForm(character);
-            skillForm.ShowDialog();
+            SkillsButtonClicked?.Invoke(this, e);
         }
 
         private void CraftingButton_Click(object sender, EventArgs e)
         {
-            CraftingForm craftingForm = new CraftingForm(new List<Character> { character }, vault);
-            craftingForm.ShowDialog();
+            CraftingButtonClicked?.Invoke(this, e);
         }
 
         private void StoreButton_Click(object sender, EventArgs e)
         {
-            StoreForm storeForm = new StoreForm(character, vault);
-            storeForm.ShowDialog();
+            StoreButtonClicked?.Invoke(this, e);
         }
 
         private void ReturnHomeButton_Click(object sender, EventArgs e)
@@ -88,4 +89,3 @@ namespace PVRL
         }
     }
 }
-

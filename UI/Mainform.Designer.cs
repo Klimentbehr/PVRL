@@ -41,7 +41,7 @@
             // 
             // characterCreationButton
             // 
-            characterCreationButton.Location = new Point(12, 12);
+            characterCreationButton.Location = new Point(480, 132);
             characterCreationButton.Name = "characterCreationButton";
             characterCreationButton.Size = new Size(150, 54);
             characterCreationButton.TabIndex = 0;
@@ -51,7 +51,7 @@
             // 
             // manageCharacterButton
             // 
-            manageCharacterButton.Location = new Point(12, 72);
+            manageCharacterButton.Location = new Point(324, 132);
             manageCharacterButton.Name = "manageCharacterButton";
             manageCharacterButton.Size = new Size(150, 54);
             manageCharacterButton.TabIndex = 1;
@@ -71,7 +71,7 @@
             // 
             // exitButton
             // 
-            exitButton.Location = new Point(12, 192);
+            exitButton.Location = new Point(168, 132);
             exitButton.Name = "exitButton";
             exitButton.Size = new Size(150, 54);
             exitButton.TabIndex = 3;
@@ -82,16 +82,17 @@
             // label1
             // 
             label1.BackColor = Color.Transparent;
-            label1.Font = new Font("Segoe UI", 45F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Font = new Font("Segoe UI", 35F, FontStyle.Regular, GraphicsUnit.Point);
             label1.Location = new Point(200, 12);
             label1.Name = "label1";
-            label1.Size = new Size(497, 164);
+            label1.Size = new Size(443, 145);
             label1.TabIndex = 4;
             label1.Text = "PVRL";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // mainTabControl
             // 
+            mainTabControl.Alignment = TabAlignment.Bottom;
             mainTabControl.Controls.Add(homeTabPage);
             mainTabControl.Controls.Add(manageCharacterTabPage);
             mainTabControl.Dock = DockStyle.Fill;
@@ -101,7 +102,9 @@
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
             mainTabControl.Size = new Size(800, 600);
+            mainTabControl.SizeMode = TabSizeMode.Fixed;
             mainTabControl.TabIndex = 5;
+            mainTabControl.SelectedIndexChanged += mainTabControl_SelectedIndexChanged;
             // 
             // homeTabPage
             // 
@@ -112,20 +115,19 @@
             homeTabPage.Controls.Add(pveButton);
             homeTabPage.Controls.Add(exitButton);
             homeTabPage.Controls.Add(label1);
-            homeTabPage.Location = new Point(4, 34);
+            homeTabPage.Location = new Point(4, 4);
             homeTabPage.Name = "homeTabPage";
             homeTabPage.Padding = new Padding(3);
             homeTabPage.Size = new Size(792, 562);
             homeTabPage.TabIndex = 0;
             homeTabPage.Text = "Home";
+            homeTabPage.Click += homeTabPage_Click;
             // 
             // manageCharacterTabPage
             // 
             manageCharacterTabPage.BackColor = Color.Transparent;
-            manageCharacterTabPage.BackgroundImage = (Image)resources.GetObject("homeTabPage.BackgroundImage");
-            manageCharacterTabPage.BackgroundImageLayout = ImageLayout.Stretch;
             manageCharacterTabPage.Controls.Add(manageCharacterControl);
-            manageCharacterTabPage.Location = new Point(4, 34);
+            manageCharacterTabPage.Location = new Point(4, 4);
             manageCharacterTabPage.Name = "manageCharacterTabPage";
             manageCharacterTabPage.Padding = new Padding(3);
             manageCharacterTabPage.Size = new Size(792, 562);
@@ -134,18 +136,30 @@
             // 
             // manageCharacterControl
             // 
+            manageCharacterControl.BackgroundImage = (Image)resources.GetObject("manageCharacterControl.BackgroundImage");
+            manageCharacterControl.BackgroundImageLayout = ImageLayout.Stretch;
             manageCharacterControl.Dock = DockStyle.Fill;
             manageCharacterControl.Location = new Point(3, 3);
+            manageCharacterControl.Margin = new Padding(4, 3, 4, 3);
             manageCharacterControl.Name = "manageCharacterControl";
             manageCharacterControl.Size = new Size(786, 556);
             manageCharacterControl.TabIndex = 0;
+            manageCharacterControl.InventoryButtonClicked += ManageCharacterControl_InventoryButtonClicked;
+            manageCharacterControl.SkillsButtonClicked += ManageCharacterControl_SkillsButtonClicked;
+            manageCharacterControl.CraftingButtonClicked += ManageCharacterControl_CraftingButtonClicked;
+            manageCharacterControl.StoreButtonClicked += ManageCharacterControl_StoreButtonClicked;
             // 
             // MainForm
             // 
+            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(800, 600);
             Controls.Add(mainTabControl);
+            FormBorderStyle = FormBorderStyle.None;
             Name = "MainForm";
             Text = "PVRL";
+            WindowState = FormWindowState.Maximized;
+            Resize += MainForm_Resize;
             mainTabControl.ResumeLayout(false);
             homeTabPage.ResumeLayout(false);
             manageCharacterTabPage.ResumeLayout(false);

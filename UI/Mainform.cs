@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using PVRL.Functions;
+using WMPLib; // Add this namespace for Windows Media Player
 
 namespace PVRL
 {
@@ -14,6 +15,7 @@ namespace PVRL
         private List<Character> characters;
         public Vault vault;
         private const string charactersDirectory = "Characters";
+        private WindowsMediaPlayer backgroundPlayer; // Add this field for background music
 
         public MainForm()
         {
@@ -22,19 +24,20 @@ namespace PVRL
             characters = new List<Character>();
             vault = new Vault();
 
-            // Set to fullscreen on launch
-            this.WindowState = FormWindowState.Maximized;
-            this.FormBorderStyle = FormBorderStyle.None;
-
-            // Set background image
-            this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
-            this.BackgroundImageLayout = ImageLayout.Stretch;
-
-            // Handle resize event
-            this.Resize += MainForm_Resize;
+            // Initialize and play background music
+            InitializeBackgroundMusic();
 
             // Load data asynchronously
             LoadDataAsync();
+        }
+
+        private void InitializeBackgroundMusic()
+        {
+            backgroundPlayer = new WindowsMediaPlayer();
+            backgroundPlayer.URL = "E:\\Hitfromthebeast\\Hitfromthebeast.mp3"; // Replace with the path to your music file
+            backgroundPlayer.settings.setMode("loop", true); // Loop the music
+            backgroundPlayer.settings.volume = 30; // Set volume (0 to 100)
+            backgroundPlayer.controls.play();
         }
 
         private async void LoadDataAsync()
@@ -207,19 +210,19 @@ namespace PVRL
             int centerX = this.ClientSize.Width / 2;
             int centerY = this.ClientSize.Height / 2;
 
-            int buttonWidth = (int)(this.ClientSize.Width * 0.3); // Increase button width
-            int buttonHeight = (int)(this.ClientSize.Height * 0.1); // Increase button height
-            int spacing = (int)(buttonHeight * 0.1); // Space between buttons
+            int buttonWidth = (int)(this.ClientSize.Width * 0.3); // 30% of the form's width
+            int buttonHeight = (int)(this.ClientSize.Height * 0.1); // 10% of the form's height
+            int spacing = (int)(buttonHeight * 0.25); // Space between buttons, 25% of button height
 
             characterCreationButton.Size = new Size(buttonWidth, buttonHeight);
             manageCharacterButton.Size = new Size(buttonWidth, buttonHeight);
             pveButton.Size = new Size(buttonWidth, buttonHeight);
             exitButton.Size = new Size(buttonWidth, buttonHeight);
 
-            characterCreationButton.Location = new Point(centerX - buttonWidth / 2, centerY - 2 * buttonHeight - 2 * spacing);
-            manageCharacterButton.Location = new Point(centerX - buttonWidth / 2, centerY - buttonHeight / 2 - spacing);
-            pveButton.Location = new Point(centerX - buttonWidth / 2, centerY + buttonHeight + spacing);
-            exitButton.Location = new Point(centerX - buttonWidth / 2, centerY + 2 * buttonHeight + 2 * spacing);
+            characterCreationButton.Location = new Point(centerX - buttonWidth / 2, centerY - 2 * (buttonHeight + spacing));
+            manageCharacterButton.Location = new Point(centerX - buttonWidth / 2, centerY - (buttonHeight + spacing / 2));
+            pveButton.Location = new Point(centerX - buttonWidth / 2, centerY + spacing / 2);
+            exitButton.Location = new Point(centerX - buttonWidth / 2, centerY + buttonHeight + (int)(1.5 * spacing));
 
             int buttonFontSize = (int)(buttonHeight * 0.25); // Set font size to 25% of button height
             characterCreationButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
@@ -229,8 +232,9 @@ namespace PVRL
 
             int labelFontSize = (int)(this.ClientSize.Width * 0.035); // Set font size based on window width
             label1.Font = new Font("Segoe UI", labelFontSize, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(centerX - label1.Width / 2, centerY - 3 * buttonHeight - 3 * spacing - label1.Height);
+            label1.Location = new Point(centerX - label1.Width / 2, centerY - 3 * (buttonHeight + spacing) - label1.Height);
         }
+
 
         public void ReturnToHome()
         {
@@ -240,6 +244,60 @@ namespace PVRL
         private void ExitButton_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void ManageCharacterControl_InventoryButtonClicked(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                InventoryForm inventoryForm = new InventoryForm(characters, vault);
+                inventoryForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage inventory.");
+            }
+        }
+
+        private void ManageCharacterControl_SkillsButtonClicked(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                SkillForm skillsForm = new SkillForm(characters[0]);
+                skillsForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage skills.");
+            }
+        }
+
+        private void ManageCharacterControl_CraftingButtonClicked(object sender, EventArgs e)
+        {
+            CraftingForm craftingForm = new CraftingForm(characters, vault);
+            craftingForm.ShowDialog();
+        }
+
+        private void ManageCharacterControl_StoreButtonClicked(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                StoreForm storeForm = new StoreForm(characters[0], vault);
+                storeForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage store.");
+            }
+        }
+
+        private void mainTabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void homeTabPage_Click(object sender, EventArgs e)
+        {
         }
     }
 }

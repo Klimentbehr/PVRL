@@ -12,7 +12,7 @@ namespace PVRL
             this.DrawItem += new DrawItemEventHandler(CustomTabControl_DrawItem);
             this.ItemSize = new Size(100, 30); // Adjust size to resemble taskbar items
             this.SizeMode = TabSizeMode.Fixed; // Ensure fixed size for tabs
-            this.Alignment = TabAlignment.Bottom; // Align tabs at the bottom
+            this.Alignment = TabAlignment.Top; // Align tabs at the bottom
         }
 
         private void CustomTabControl_DrawItem(object sender, DrawItemEventArgs e)
