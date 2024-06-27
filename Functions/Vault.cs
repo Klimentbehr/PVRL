@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
 using PVRL.Functions;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 public class Vault
 {
@@ -7,7 +10,7 @@ public class Vault
     public List<HealingItem> HealingItems { get; private set; }
     public List<ArmorGeneration.Armor> Armors { get; private set; }
     public List<RepairKit> RepairItems { get; private set; } // Add this line
-    public Dictionary<string, Dictionary<string, List<string>>> Parts { get; private set; }
+    public Dictionary<string, Dictionary<string, List<GunGeneration.GunPart>>> Parts { get; private set; }
     public const string vaultFilePath = "vault.txt";
 
     public Vault()
@@ -16,7 +19,7 @@ public class Vault
         HealingItems = new List<HealingItem>();
         Armors = new List<ArmorGeneration.Armor>();
         RepairItems = new List<RepairKit>(); // Add this line
-        Parts = new Dictionary<string, Dictionary<string, List<string>>>();
+        Parts = new Dictionary<string, Dictionary<string, List<GunGeneration.GunPart>>>();
         LoadVault();
     }
 
@@ -79,18 +82,18 @@ public class Vault
         AddPart("Trigger", gun.Trigger);
     }
 
-    public void AddPart(string partType, string part)
+    public void AddPart(string partType, GunGeneration.GunPart part)
     {
-        var partQuality = part.Split('.')[1];
+        var partQuality = part.Quality;
 
         if (!Parts.ContainsKey(partType))
         {
-            Parts[partType] = new Dictionary<string, List<string>>();
+            Parts[partType] = new Dictionary<string, List<GunGeneration.GunPart>>();
         }
 
         if (!Parts[partType].ContainsKey(partQuality))
         {
-            Parts[partType][partQuality] = new List<string>();
+            Parts[partType][partQuality] = new List<GunGeneration.GunPart>();
         }
 
         Parts[partType][partQuality].Add(part);
@@ -102,7 +105,7 @@ public class Vault
         return Parts.ContainsKey(partType) && Parts[partType].ContainsKey(partQuality) && Parts[partType][partQuality].Count > 0;
     }
 
-    public string GetPart(string partType, string partQuality)
+    public GunGeneration.GunPart GetPart(string partType, string partQuality)
     {
         if (HasPart(partType, partQuality))
         {
@@ -144,7 +147,7 @@ public class Vault
         }
     }
 
-    public void RemovePart(string partType, string partQuality, string part)
+    public void RemovePart(string partType, string partQuality, GunGeneration.GunPart part)
     {
         if (Parts.ContainsKey(partType) && Parts[partType].ContainsKey(partQuality))
         {
@@ -173,7 +176,7 @@ public class Vault
                 HealingItems = JsonConvert.DeserializeObject<List<HealingItem>>(vaultData.HealingItems.ToString()) ?? new List<HealingItem>();
                 Armors = JsonConvert.DeserializeObject<List<ArmorGeneration.Armor>>(vaultData.Armors.ToString()) ?? new List<ArmorGeneration.Armor>();
                 RepairItems = JsonConvert.DeserializeObject<List<RepairKit>>(vaultData.RepairItems.ToString()) ?? new List<RepairKit>(); // Add this line
-                Parts = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>(vaultData.Parts.ToString()) ?? new Dictionary<string, Dictionary<string, List<string>>>();
+                Parts = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<GunGeneration.GunPart>>>>(vaultData.Parts.ToString()) ?? new Dictionary<string, Dictionary<string, List<GunGeneration.GunPart>>>();
             }
         }
         catch (Exception ex)
@@ -183,7 +186,7 @@ public class Vault
             HealingItems = new List<HealingItem>();
             Armors = new List<ArmorGeneration.Armor>();
             RepairItems = new List<RepairKit>(); // Add this line
-            Parts = new Dictionary<string, Dictionary<string, List<string>>>();
+            Parts = new Dictionary<string, Dictionary<string, List<GunGeneration.GunPart>>>();
         }
     }
 }

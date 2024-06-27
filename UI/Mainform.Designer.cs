@@ -5,7 +5,7 @@
         private System.ComponentModel.IContainer components = null;
         private Button characterCreationButton;
         private Button manageCharacterButton;
-        private Button pveButton;
+        private Button playButton; // Changed from pveButton to playButton
         private Button exitButton;
         private Label label1;
         private CustomTabControl mainTabControl;
@@ -27,7 +27,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             characterCreationButton = new Button();
             manageCharacterButton = new Button();
-            pveButton = new Button();
+            playButton = new Button(); // Changed from pveButton to playButton
             exitButton = new Button();
             label1 = new Label();
             mainTabControl = new CustomTabControl();
@@ -59,15 +59,15 @@
             manageCharacterButton.UseVisualStyleBackColor = true;
             manageCharacterButton.Click += ManageCharacterButton_Click;
             // 
-            // pveButton
+            // playButton
             // 
-            pveButton.Location = new Point(12, 132);
-            pveButton.Name = "pveButton";
-            pveButton.Size = new Size(150, 54);
-            pveButton.TabIndex = 2;
-            pveButton.Text = "PvE";
-            pveButton.UseVisualStyleBackColor = true;
-            pveButton.Click += PveButton_Click;
+            playButton.Location = new Point(12, 132);
+            playButton.Name = "playButton";
+            playButton.Size = new Size(150, 54);
+            playButton.TabIndex = 2;
+            playButton.Text = "Play";
+            playButton.UseVisualStyleBackColor = true;
+            playButton.Click += PlayButton_Click;
             // 
             // exitButton
             // 
@@ -112,7 +112,7 @@
             homeTabPage.BackgroundImage = (Image)resources.GetObject("homeTabPage.BackgroundImage");
             homeTabPage.Controls.Add(characterCreationButton);
             homeTabPage.Controls.Add(manageCharacterButton);
-            homeTabPage.Controls.Add(pveButton);
+            homeTabPage.Controls.Add(playButton); // Changed from pveButton to playButton
             homeTabPage.Controls.Add(exitButton);
             homeTabPage.Controls.Add(label1);
             homeTabPage.Location = new Point(4, 4);

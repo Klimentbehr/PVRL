@@ -18,11 +18,11 @@ namespace PVRL
         private bool playerFled = false;
         public bool PlayerWon { get; private set; } = false;
 
-        private bool playerDodging = false;
-        private int dodgeCounter;
-
         private int currentRoom;
         private int totalRooms;
+
+        private int turnCounter = 0;
+        private int nextHealingTurn;
 
         public CombatForm(Character player, DifficultyLevel difficulty, Vault vault)
         {
@@ -40,7 +40,6 @@ namespace PVRL
             this.enemies = new List<Enemy>();
 
             HealPlayerToFull(); // Heal the player to full health before starting combat
-            dodgeCounter = player.Dexterity; // Set dodge counter based on player's Dexterity
 
             combatFormOpen = true;
             this.FormClosing += CombatForm_FormClosing;
@@ -89,9 +88,18 @@ namespace PVRL
             enemies = Enemy.GenerateEnemies(difficulty, currentRoom == totalRooms);
             InitializeHealthBars();
             UpdateEnemySelectionComboBox(); // Ensure combo box is updated with new enemies
-            UpdateDodgeCounterLabel(); // Initialize dodge counter label
             UpdateRoomCounterLabel(); // Update the room counter label
             UpdateCombatLog($"Player {player.Name} vs Enemies: {string.Join(", ", enemies.Select(e => e.Name))}");
+
+            // Initialize turn counter and next healing turn
+            turnCounter = 0;
+            SetNextHealingTurn();
+        }
+
+        private void SetNextHealingTurn()
+        {
+            Random random = new Random();
+            nextHealingTurn = random.Next(2, 5); // Random number between 2 and 4
         }
 
         private void UpdateEnemySelectionComboBox()
@@ -146,7 +154,6 @@ namespace PVRL
             itemButton.Enabled = true;
             healButton.Enabled = true;
             fleeButton.Enabled = true;
-            dodgeButton.Enabled = true;
         }
 
         private void PerformPlayerAttack()
@@ -166,24 +173,33 @@ namespace PVRL
                 return;
             }
 
-            Random random = new Random();
-            int hitChance = random.Next(1, 101);
-            if (selectedEnemy.Dexterity * 10 >= hitChance)
+            int numberOfAttacks = player.Gun.FireRate / 10 + 1;
+
+            for (int i = 0; i < numberOfAttacks; i++)
             {
-                UpdateCombatLog($"Player's attack missed {selectedEnemy.Name}!");
-                return;
+                if (selectedEnemy.Health <= 0)
+                    break;
+
+                Random random = new Random();
+                int hitChance = random.Next(1, 101);
+                if (selectedEnemy.Dexterity * 10 >= hitChance)
+                {
+                    UpdateCombatLog($"Player's attack missed {selectedEnemy.Name}!");
+                    continue;
+                }
+
+                int playerDamage = CalculateDamage(player.Gun.Damage, hitChance, player.Strength);
+
+                selectedEnemy.Health -= playerDamage;
+                if (selectedEnemy.Health < 0) selectedEnemy.Health = 0;
+
+                UpdateHealthBars();
+                UpdateCombatLog($"Player attacks {selectedEnemy.Name} for {playerDamage} damage.");
             }
 
-            int playerDamage = CalculateDamage(player.Gun.Damage, hitChance, player.Strength);
-
-            selectedEnemy.Health -= playerDamage;
-            if (selectedEnemy.Health < 0) selectedEnemy.Health = 0;
-
-            UpdateHealthBars();
-            UpdateCombatLog($"Player attacks {selectedEnemy.Name} for {playerDamage} damage.");
-
             CheckCombatEnd();
-            EnemyActions();
+            if (enemies.Any(e => e.Health > 0))
+                EnemyActions();
         }
 
         private void PerformPlayerHeal()
@@ -215,15 +231,14 @@ namespace PVRL
                 player.HealingItems.Remove(selectedHealingItem); // Remove used healing item
                 UpdateHealthBars();
                 UpdateCombatLog($"Player uses {selectedHealingItem.Name} and heals for {healAmount} health.");
-                CheckCombatEnd();
             }
-            EnemyActions();
+            // Enemy actions do not happen after healing
         }
 
         private void PerformPlayerFlee()
         {
             Random random = new Random();
-            int fleeChance = player.Dexterity * 10; // Assuming each point in Dexterity gives a 10% chance to flee
+            int fleeChance = player.Dexterity; // Each point in Dexterity gives a 1% chance to flee
             int roll = random.Next(1, 101); // Roll a number between 1 and 100
 
             if (roll <= fleeChance)
@@ -243,37 +258,19 @@ namespace PVRL
         private void AttackButton_Click(object sender, EventArgs e)
         {
             PerformPlayerAttack();
+            PerformPassiveHealing();
         }
 
         private void HealButton_Click(object sender, EventArgs e)
         {
             PerformPlayerHeal();
+            PerformPassiveHealing();
         }
 
         private void FleeButton_Click(object sender, EventArgs e)
         {
             PerformPlayerFlee();
-        }
-
-        private void DodgeButton_Click(object sender, EventArgs e)
-        {
-            PerformPlayerDodge();
-        }
-
-        private void PerformPlayerDodge()
-        {
-            if (dodgeCounter > 0)
-            {
-                playerDodging = true;
-                dodgeCounter--;
-                UpdateDodgeCounterLabel();
-                UpdateCombatLog("Player is attempting to dodge the next attack.");
-            }
-            else
-            {
-                MessageBox.Show("You have no dodges left!");
-            }
-            EnemyActions(); // Execute enemy actions right after the player dodges
+            PerformPassiveHealing();
         }
 
         private void EnemyActions()
@@ -282,7 +279,7 @@ namespace PVRL
             foreach (var enemy in enemies.Where(e => e.Health > 0))
             {
                 int hitChance = random.Next(1, 101);
-                if (playerDodging && player.Dexterity * 10 >= hitChance)
+                if (player.Dexterity >= hitChance)
                 {
                     UpdateCombatLog($"{enemy.Name} missed the player!");
                     continue;
@@ -298,7 +295,26 @@ namespace PVRL
                 CheckCombatEnd();
             }
 
-            playerDodging = false; // Reset dodging state after enemy actions
+            PerformPassiveHealing(); // Perform passive healing at the end of enemy actions
+        }
+
+        private void PerformPassiveHealing()
+        {
+            turnCounter++;
+            if (turnCounter >= nextHealingTurn)
+            {
+                int healAmount = player.Intelligence * 2;
+                player.Health += healAmount;
+                if (player.Health > player.MaxHealth)
+                {
+                    player.Health = player.MaxHealth;
+                }
+
+                UpdateCombatLog($"Player passively heals for {healAmount} health.");
+                UpdateHealthBars();
+                SetNextHealingTurn(); // Reset the next healing turn
+                turnCounter = 0; // Reset the turn counter
+            }
         }
 
         private void UpdateHealthBars()
@@ -418,7 +434,6 @@ namespace PVRL
             itemButton.Enabled = false;
             healButton.Enabled = false;
             fleeButton.Enabled = false;
-            dodgeButton.Enabled = false;
             combatFormOpen = false;
         }
 
@@ -434,6 +449,23 @@ namespace PVRL
                     vault.AddGun(enemy.Gun);
                     UpdateCombatLog($"{enemy.Name} dropped a weapon!");
                 }
+            }
+
+            // Ensure boss always drops a weapon of appropriate tier
+            if (currentRoom == totalRooms)
+            {
+                GunGeneration gunGen = new GunGeneration();
+                GunGeneration.Gun droppedGun = difficulty switch
+                {
+                    DifficultyLevel.Easy => gunGen.GenerateRandomGun(DifficultyLevel.Easy),
+                    DifficultyLevel.Normal => gunGen.GenerateRandomGun(DifficultyLevel.Normal),
+                    DifficultyLevel.Hard => gunGen.GenerateRandomGun(DifficultyLevel.Hard),
+                    DifficultyLevel.BossSlaughter => gunGen.GenerateRandomGun(DifficultyLevel.BossSlaughter),
+                    _ => gunGen.GenerateRandomGun(DifficultyLevel.Normal),
+                };
+
+                vault.AddGun(droppedGun);
+                UpdateCombatLog($"Boss dropped a weapon: {droppedGun.Name}");
             }
 
             int moneyLooted = random.Next(difficulty == DifficultyLevel.Easy ? 1 : (difficulty == DifficultyLevel.Normal ? 2 : (difficulty == DifficultyLevel.Hard ? 3 : 4)),
@@ -472,11 +504,6 @@ namespace PVRL
         private void UpdateCombatLog(string message)
         {
             combatLogTextBox.AppendText($"{message}{Environment.NewLine}");
-        }
-
-        private void UpdateDodgeCounterLabel()
-        {
-            dodgeCounterLabel.Text = $"Dodges Left: {dodgeCounter}";
         }
 
         private void UpdateRoomCounterLabel()

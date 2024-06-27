@@ -26,6 +26,8 @@
         private Label walletLabel;
         private ListBox armorsListBox;
         private Button closeButton;
+        private ComboBox characterComboBox;
+        private Label characterLabel;
 
         protected override void Dispose(bool disposing)
         {
@@ -62,6 +64,8 @@
             buyFirstRateHealingItemButton = new Button();
             walletLabel = new Label();
             closeButton = new Button();
+            characterComboBox = new ComboBox();
+            characterLabel = new Label();
             tabControl.SuspendLayout();
             tabGuns.SuspendLayout();
             tabArmor.SuspendLayout();
@@ -75,10 +79,10 @@
             tabControl.Controls.Add(tabHealingGear);
             tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
             tabControl.ItemSize = new Size(100, 30);
-            tabControl.Location = new Point(10, 10);
+            tabControl.Location = new Point(10, 50);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(1900, 1000);
+            tabControl.Size = new Size(1900, 950);
             tabControl.SizeMode = TabSizeMode.Fixed;
             tabControl.TabIndex = 0;
             // 
@@ -94,7 +98,7 @@
             tabGuns.Location = new Point(4, 34);
             tabGuns.Name = "tabGuns";
             tabGuns.Padding = new Padding(3);
-            tabGuns.Size = new Size(1892, 962);
+            tabGuns.Size = new Size(1892, 912);
             tabGuns.TabIndex = 0;
             tabGuns.Text = "Guns";
             // 
@@ -103,6 +107,7 @@
             gunsListBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             gunsListBox.FormattingEnabled = true;
             gunsListBox.ItemHeight = 21;
+            gunsListBox.SelectionMode = SelectionMode.MultiExtended;
             gunsListBox.Location = new Point(6, 6);
             gunsListBox.Name = "gunsListBox";
             gunsListBox.Size = new Size(450, 844);
@@ -135,6 +140,7 @@
             playerGunsListBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             playerGunsListBox.FormattingEnabled = true;
             playerGunsListBox.ItemHeight = 21;
+            playerGunsListBox.SelectionMode = SelectionMode.MultiExtended;
             playerGunsListBox.Location = new Point(918, 6);
             playerGunsListBox.Name = "playerGunsListBox";
             playerGunsListBox.Size = new Size(450, 844);
@@ -174,7 +180,7 @@
             tabArmor.Location = new Point(4, 34);
             tabArmor.Name = "tabArmor";
             tabArmor.Padding = new Padding(3);
-            tabArmor.Size = new Size(1892, 962);
+            tabArmor.Size = new Size(1892, 912);
             tabArmor.TabIndex = 1;
             tabArmor.Text = "Armor";
             // 
@@ -183,6 +189,7 @@
             playerArmorsListBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             playerArmorsListBox.FormattingEnabled = true;
             playerArmorsListBox.ItemHeight = 21;
+            playerArmorsListBox.SelectionMode = SelectionMode.MultiExtended;
             playerArmorsListBox.Location = new Point(918, 6);
             playerArmorsListBox.Name = "playerArmorsListBox";
             playerArmorsListBox.Size = new Size(450, 844);
@@ -236,6 +243,7 @@
             armorsListBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             armorsListBox.FormattingEnabled = true;
             armorsListBox.ItemHeight = 21;
+            armorsListBox.SelectionMode = SelectionMode.MultiExtended;
             armorsListBox.Location = new Point(6, 6);
             armorsListBox.Name = "armorsListBox";
             armorsListBox.Size = new Size(450, 844);
@@ -253,7 +261,7 @@
             tabHealingGear.Location = new Point(4, 34);
             tabHealingGear.Name = "tabHealingGear";
             tabHealingGear.Padding = new Padding(3);
-            tabHealingGear.Size = new Size(1892, 962);
+            tabHealingGear.Size = new Size(1892, 912);
             tabHealingGear.TabIndex = 2;
             tabHealingGear.Text = "Healing/Gear";
             // 
@@ -262,6 +270,7 @@
             playerHealingItemsListBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             playerHealingItemsListBox.FormattingEnabled = true;
             playerHealingItemsListBox.ItemHeight = 21;
+            playerHealingItemsListBox.SelectionMode = SelectionMode.MultiExtended;
             playerHealingItemsListBox.Location = new Point(6, 6);
             playerHealingItemsListBox.Name = "playerHealingItemsListBox";
             playerHealingItemsListBox.Size = new Size(450, 844);
@@ -326,19 +335,44 @@
             // 
             // closeButton
             // 
-            closeButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            closeButton.Location = new Point(1800, 1020);
+            closeButton.Font = new Font("Segoe UI", 20F, FontStyle.Regular, GraphicsUnit.Point);
+            closeButton.Location = new Point(1299, 1017);
             closeButton.Name = "closeButton";
-            closeButton.Size = new Size(100, 40);
+            closeButton.Size = new Size(189, 51);
             closeButton.TabIndex = 2;
             closeButton.Text = "Close";
             closeButton.UseVisualStyleBackColor = true;
             closeButton.Click += closeButton_Click;
             // 
+            // characterComboBox
+            // 
+            characterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            characterComboBox.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            characterComboBox.FormattingEnabled = true;
+            characterComboBox.Location = new Point(1019, 6);
+            characterComboBox.Name = "characterComboBox";
+            characterComboBox.Size = new Size(300, 40);
+            characterComboBox.TabIndex = 3;
+            characterComboBox.SelectedIndexChanged += CharacterComboBox_SelectedIndexChanged;
+            // 
+            // characterLabel
+            // 
+            characterLabel.AutoSize = true;
+            characterLabel.BackColor = Color.Transparent;
+            characterLabel.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            characterLabel.ForeColor = SystemColors.ButtonHighlight;
+            characterLabel.Location = new Point(783, 9);
+            characterLabel.Name = "characterLabel";
+            characterLabel.Size = new Size(186, 32);
+            characterLabel.TabIndex = 4;
+            characterLabel.Text = "Select Character";
+            // 
             // StoreForm
             // 
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
-            ClientSize = new Size(1920, 1080);
+            ClientSize = new Size(1931, 1080);
+            Controls.Add(characterLabel);
+            Controls.Add(characterComboBox);
             Controls.Add(walletLabel);
             Controls.Add(closeButton);
             Controls.Add(tabControl);

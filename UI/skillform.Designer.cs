@@ -3,19 +3,15 @@
     partial class SkillForm
     {
         private System.ComponentModel.IContainer components = null;
-        private Label strengthLabel;
-        private NumericUpDown strengthNumericUpDown;
-        private Label dexterityLabel;
-        private NumericUpDown dexterityNumericUpDown;
-        private Label intelligenceLabel;
-        private NumericUpDown intelligenceNumericUpDown;
-        private Label wisdomLabel;
-        private NumericUpDown wisdomNumericUpDown;
-        private Label charismaLabel;
-        private NumericUpDown charismaNumericUpDown;
-        private Label pointsLeftLabel;
+        private CustomTabControl tabControl;
+        private CustomTabPage offenseTabPage;
+        private CustomTabPage defenseTabPage;
+        private CustomTabPage supportTabPage;
         private Button confirmButton;
         private Button cancelButton;
+        private Label skillPointsLabel;
+        private ComboBox characterComboBox;
+        private Label characterInfoLabel;
 
         protected override void Dispose(bool disposing)
         {
@@ -29,176 +25,132 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SkillForm));
-            strengthLabel = new Label();
-            strengthNumericUpDown = new NumericUpDown();
-            dexterityLabel = new Label();
-            dexterityNumericUpDown = new NumericUpDown();
-            intelligenceLabel = new Label();
-            intelligenceNumericUpDown = new NumericUpDown();
-            wisdomLabel = new Label();
-            wisdomNumericUpDown = new NumericUpDown();
-            charismaLabel = new Label();
-            charismaNumericUpDown = new NumericUpDown();
-            pointsLeftLabel = new Label();
+            tabControl = new CustomTabControl();
+            offenseTabPage = new CustomTabPage();
+            defenseTabPage = new CustomTabPage();
+            supportTabPage = new CustomTabPage();
             confirmButton = new Button();
             cancelButton = new Button();
-            ((System.ComponentModel.ISupportInitialize)strengthNumericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dexterityNumericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)intelligenceNumericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)wisdomNumericUpDown).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)charismaNumericUpDown).BeginInit();
+            skillPointsLabel = new Label();
+            characterComboBox = new ComboBox();
+            characterInfoLabel = new Label();
+            tabControl.SuspendLayout();
             SuspendLayout();
             // 
-            // strengthLabel
+            // tabControl
             // 
-            strengthLabel.AutoSize = true;
-            strengthLabel.BackColor = Color.Transparent;
-            strengthLabel.ForeColor = SystemColors.ButtonFace;
-            strengthLabel.Location = new Point(12, 15);
-            strengthLabel.Name = "strengthLabel";
-            strengthLabel.Size = new Size(55, 15);
-            strengthLabel.TabIndex = 0;
-            strengthLabel.Text = "Strength:";
+            tabControl.Controls.Add(offenseTabPage);
+            tabControl.Controls.Add(defenseTabPage);
+            tabControl.Controls.Add(supportTabPage);
+            tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
+            tabControl.ItemSize = new Size(150, 40);
+            tabControl.Location = new Point(10, 120);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(1337, 814);
+            tabControl.SizeMode = TabSizeMode.Fixed;
+            tabControl.TabIndex = 0;
             // 
-            // strengthNumericUpDown
+            // offenseTabPage
             // 
-            strengthNumericUpDown.Location = new Point(80, 13);
-            strengthNumericUpDown.Name = "strengthNumericUpDown";
-            strengthNumericUpDown.Size = new Size(120, 23);
-            strengthNumericUpDown.TabIndex = 1;
-            strengthNumericUpDown.ValueChanged += AttributeNumericUpDown_ValueChanged;
+            offenseTabPage.BackColor = SystemColors.Info;
+            offenseTabPage.Location = new Point(4, 44);
+            offenseTabPage.Name = "offenseTabPage";
+            offenseTabPage.Padding = new Padding(3);
+            offenseTabPage.Size = new Size(1329, 766);
+            offenseTabPage.TabIndex = 0;
+            offenseTabPage.Text = "Offense";
             // 
-            // dexterityLabel
+            // defenseTabPage
             // 
-            dexterityLabel.AutoSize = true;
-            dexterityLabel.BackColor = Color.Transparent;
-            dexterityLabel.ForeColor = SystemColors.ButtonFace;
-            dexterityLabel.Location = new Point(12, 45);
-            dexterityLabel.Name = "dexterityLabel";
-            dexterityLabel.Size = new Size(57, 15);
-            dexterityLabel.TabIndex = 2;
-            dexterityLabel.Text = "Dexterity:";
+            defenseTabPage.BackColor = SystemColors.Info;
+            defenseTabPage.Location = new Point(4, 44);
+            defenseTabPage.Name = "defenseTabPage";
+            defenseTabPage.Padding = new Padding(3);
+            defenseTabPage.Size = new Size(1528, 766);
+            defenseTabPage.TabIndex = 1;
+            defenseTabPage.Text = "Defense";
             // 
-            // dexterityNumericUpDown
+            // supportTabPage
             // 
-            dexterityNumericUpDown.Location = new Point(80, 43);
-            dexterityNumericUpDown.Name = "dexterityNumericUpDown";
-            dexterityNumericUpDown.Size = new Size(120, 23);
-            dexterityNumericUpDown.TabIndex = 3;
-            dexterityNumericUpDown.ValueChanged += AttributeNumericUpDown_ValueChanged;
-            // 
-            // intelligenceLabel
-            // 
-            intelligenceLabel.AutoSize = true;
-            intelligenceLabel.BackColor = Color.Transparent;
-            intelligenceLabel.ForeColor = SystemColors.ButtonFace;
-            intelligenceLabel.Location = new Point(12, 75);
-            intelligenceLabel.Name = "intelligenceLabel";
-            intelligenceLabel.Size = new Size(71, 15);
-            intelligenceLabel.TabIndex = 4;
-            intelligenceLabel.Text = "Intelligence:";
-            // 
-            // intelligenceNumericUpDown
-            // 
-            intelligenceNumericUpDown.Location = new Point(80, 73);
-            intelligenceNumericUpDown.Name = "intelligenceNumericUpDown";
-            intelligenceNumericUpDown.Size = new Size(120, 23);
-            intelligenceNumericUpDown.TabIndex = 5;
-            intelligenceNumericUpDown.ValueChanged += AttributeNumericUpDown_ValueChanged;
-            // 
-            // wisdomLabel
-            // 
-            wisdomLabel.AutoSize = true;
-            wisdomLabel.BackColor = Color.Transparent;
-            wisdomLabel.ForeColor = SystemColors.ButtonFace;
-            wisdomLabel.Location = new Point(12, 105);
-            wisdomLabel.Name = "wisdomLabel";
-            wisdomLabel.Size = new Size(54, 15);
-            wisdomLabel.TabIndex = 6;
-            wisdomLabel.Text = "Wisdom:";
-            // 
-            // wisdomNumericUpDown
-            // 
-            wisdomNumericUpDown.Location = new Point(80, 103);
-            wisdomNumericUpDown.Name = "wisdomNumericUpDown";
-            wisdomNumericUpDown.Size = new Size(120, 23);
-            wisdomNumericUpDown.TabIndex = 7;
-            wisdomNumericUpDown.ValueChanged += AttributeNumericUpDown_ValueChanged;
-            // 
-            // charismaLabel
-            // 
-            charismaLabel.AutoSize = true;
-            charismaLabel.BackColor = Color.Transparent;
-            charismaLabel.ForeColor = SystemColors.ButtonFace;
-            charismaLabel.Location = new Point(12, 135);
-            charismaLabel.Name = "charismaLabel";
-            charismaLabel.Size = new Size(60, 15);
-            charismaLabel.TabIndex = 8;
-            charismaLabel.Text = "Charisma:";
-            // 
-            // charismaNumericUpDown
-            // 
-            charismaNumericUpDown.Location = new Point(80, 133);
-            charismaNumericUpDown.Name = "charismaNumericUpDown";
-            charismaNumericUpDown.Size = new Size(120, 23);
-            charismaNumericUpDown.TabIndex = 9;
-            charismaNumericUpDown.ValueChanged += AttributeNumericUpDown_ValueChanged;
-            // 
-            // pointsLeftLabel
-            // 
-            pointsLeftLabel.AutoSize = true;
-            pointsLeftLabel.BackColor = Color.Transparent;
-            pointsLeftLabel.ForeColor = SystemColors.ButtonFace;
-            pointsLeftLabel.Location = new Point(12, 165);
-            pointsLeftLabel.Name = "pointsLeftLabel";
-            pointsLeftLabel.Size = new Size(66, 15);
-            pointsLeftLabel.TabIndex = 10;
-            pointsLeftLabel.Text = "Points Left:";
+            supportTabPage.BackColor = SystemColors.Info;
+            supportTabPage.Location = new Point(4, 44);
+            supportTabPage.Name = "supportTabPage";
+            supportTabPage.Padding = new Padding(3);
+            supportTabPage.Size = new Size(1528, 766);
+            supportTabPage.TabIndex = 2;
+            supportTabPage.Text = "Support";
             // 
             // confirmButton
             // 
-            confirmButton.Location = new Point(80, 190);
+            confirmButton.Location = new Point(170, 940);
             confirmButton.Name = "confirmButton";
-            confirmButton.Size = new Size(120, 23);
-            confirmButton.TabIndex = 11;
+            confirmButton.Size = new Size(150, 50);
+            confirmButton.TabIndex = 1;
             confirmButton.Text = "Confirm";
             confirmButton.UseVisualStyleBackColor = true;
-            confirmButton.Click += confirmButton_Click;
+            confirmButton.Click += ConfirmButton_Click;
             // 
             // cancelButton
             // 
-            cancelButton.Location = new Point(80, 220);
+            cancelButton.Location = new Point(10, 940);
             cancelButton.Name = "cancelButton";
-            cancelButton.Size = new Size(120, 23);
-            cancelButton.TabIndex = 12;
+            cancelButton.Size = new Size(150, 50);
+            cancelButton.TabIndex = 2;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
-            cancelButton.Click += cancelButton_Click;
+            cancelButton.Click += CancelButton_Click;
+            // 
+            // skillPointsLabel
+            // 
+            skillPointsLabel.AutoSize = true;
+            skillPointsLabel.BackColor = Color.Transparent;
+            skillPointsLabel.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            skillPointsLabel.ForeColor = SystemColors.ButtonFace;
+            skillPointsLabel.Location = new Point(1353, 120);
+            skillPointsLabel.Name = "skillPointsLabel";
+            skillPointsLabel.Size = new Size(153, 32);
+            skillPointsLabel.TabIndex = 3;
+            skillPointsLabel.Text = "Skill Points: 0";
+            // 
+            // characterComboBox
+            // 
+            characterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            characterComboBox.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            characterComboBox.FormattingEnabled = true;
+            characterComboBox.Location = new Point(14, 74);
+            characterComboBox.Name = "characterComboBox";
+            characterComboBox.Size = new Size(300, 40);
+            characterComboBox.TabIndex = 4;
+            characterComboBox.SelectedIndexChanged += CharacterComboBox_SelectedIndexChanged;
+            // 
+            // characterInfoLabel
+            // 
+            characterInfoLabel.AutoSize = true;
+            characterInfoLabel.BackColor = Color.Transparent;
+            characterInfoLabel.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point);
+            characterInfoLabel.ForeColor = SystemColors.ButtonFace;
+            characterInfoLabel.Location = new Point(1353, 170);
+            characterInfoLabel.Name = "characterInfoLabel";
+            characterInfoLabel.Size = new Size(169, 32);
+            characterInfoLabel.TabIndex = 5;
+            characterInfoLabel.Text = "Character Info:";
             // 
             // SkillForm
             // 
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
-            ClientSize = new Size(220, 260);
-            Controls.Add(cancelButton);
+            ClientSize = new Size(1920, 1080);
+            Controls.Add(characterInfoLabel);
+            Controls.Add(characterComboBox);
+            Controls.Add(skillPointsLabel);
+            Controls.Add(tabControl);
             Controls.Add(confirmButton);
-            Controls.Add(pointsLeftLabel);
-            Controls.Add(charismaNumericUpDown);
-            Controls.Add(charismaLabel);
-            Controls.Add(wisdomNumericUpDown);
-            Controls.Add(wisdomLabel);
-            Controls.Add(intelligenceNumericUpDown);
-            Controls.Add(intelligenceLabel);
-            Controls.Add(dexterityNumericUpDown);
-            Controls.Add(dexterityLabel);
-            Controls.Add(strengthNumericUpDown);
-            Controls.Add(strengthLabel);
+            Controls.Add(cancelButton);
+            FormBorderStyle = FormBorderStyle.None;
             Name = "SkillForm";
-            Text = "Update Skills";
-            ((System.ComponentModel.ISupportInitialize)strengthNumericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dexterityNumericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)intelligenceNumericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)wisdomNumericUpDown).EndInit();
-            ((System.ComponentModel.ISupportInitialize)charismaNumericUpDown).EndInit();
+            Text = "Skill Tree";
+            WindowState = FormWindowState.Maximized;
+            tabControl.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }

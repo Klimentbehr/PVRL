@@ -35,6 +35,13 @@
         private Label repairItemsLabel;
         private Label characterArmorsLabel;
         private Button closeButton;
+        private Label upperReceiverLabel;
+        private Label barrelLabel;
+        private Label lowerReceiverLabel;
+        private Label bufferTubeLabel;
+        private Label stockLabel;
+        private Label gripLabel;
+        private Label triggerLabel;
 
         protected override void Dispose(bool disposing)
         {
@@ -65,12 +72,19 @@
             craftTabPage = new CustomTabPage();
             craftedGunNameLabel = new Label();
             craftedGunNameTextBox = new TextBox();
+            upperReceiverLabel = new Label();
             upperReceiverTextBox = new TextBox();
+            barrelLabel = new Label();
             barrelTextBox = new TextBox();
+            lowerReceiverLabel = new Label();
             lowerReceiverTextBox = new TextBox();
+            bufferTubeLabel = new Label();
             bufferTubeTextBox = new TextBox();
+            stockLabel = new Label();
             stockTextBox = new TextBox();
+            gripLabel = new Label();
             gripTextBox = new TextBox();
+            triggerLabel = new Label();
             triggerTextBox = new TextBox();
             craftGunButton = new Button();
             partsListBox = new ListBox();
@@ -88,7 +102,6 @@
             // 
             // tabControl
             // 
-            tabControl.Alignment = TabAlignment.Top;
             tabControl.Controls.Add(upgradeTabPage);
             tabControl.Controls.Add(craftTabPage);
             tabControl.Controls.Add(repairTabPage);
@@ -257,12 +270,19 @@
             craftTabPage.BackColor = SystemColors.Info;
             craftTabPage.Controls.Add(craftedGunNameLabel);
             craftTabPage.Controls.Add(craftedGunNameTextBox);
+            craftTabPage.Controls.Add(upperReceiverLabel);
             craftTabPage.Controls.Add(upperReceiverTextBox);
+            craftTabPage.Controls.Add(barrelLabel);
             craftTabPage.Controls.Add(barrelTextBox);
+            craftTabPage.Controls.Add(lowerReceiverLabel);
             craftTabPage.Controls.Add(lowerReceiverTextBox);
+            craftTabPage.Controls.Add(bufferTubeLabel);
             craftTabPage.Controls.Add(bufferTubeTextBox);
+            craftTabPage.Controls.Add(stockLabel);
             craftTabPage.Controls.Add(stockTextBox);
+            craftTabPage.Controls.Add(gripLabel);
             craftTabPage.Controls.Add(gripTextBox);
+            craftTabPage.Controls.Add(triggerLabel);
             craftTabPage.Controls.Add(triggerTextBox);
             craftTabPage.Controls.Add(craftGunButton);
             craftTabPage.Controls.Add(partsListBox);
@@ -291,6 +311,16 @@
             craftedGunNameTextBox.Size = new Size(300, 29);
             craftedGunNameTextBox.TabIndex = 15;
             // 
+            // upperReceiverLabel
+            // 
+            upperReceiverLabel.AutoSize = true;
+            upperReceiverLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            upperReceiverLabel.Location = new Point(20, 16);
+            upperReceiverLabel.Name = "upperReceiverLabel";
+            upperReceiverLabel.Size = new Size(116, 21);
+            upperReceiverLabel.TabIndex = 17;
+            upperReceiverLabel.Text = "Upper Receiver";
+            // 
             // upperReceiverTextBox
             // 
             upperReceiverTextBox.AllowDrop = true;
@@ -302,6 +332,16 @@
             upperReceiverTextBox.Tag = "UpperReceiver";
             upperReceiverTextBox.DragDrop += partSlot_DragDrop;
             upperReceiverTextBox.DragEnter += partSlot_DragEnter;
+            // 
+            // barrelLabel
+            // 
+            barrelLabel.AutoSize = true;
+            barrelLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            barrelLabel.Location = new Point(20, 96);
+            barrelLabel.Name = "barrelLabel";
+            barrelLabel.Size = new Size(51, 21);
+            barrelLabel.TabIndex = 18;
+            barrelLabel.Text = "Barrel";
             // 
             // barrelTextBox
             // 
@@ -315,6 +355,16 @@
             barrelTextBox.DragDrop += partSlot_DragDrop;
             barrelTextBox.DragEnter += partSlot_DragEnter;
             // 
+            // lowerReceiverLabel
+            // 
+            lowerReceiverLabel.AutoSize = true;
+            lowerReceiverLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            lowerReceiverLabel.Location = new Point(20, 176);
+            lowerReceiverLabel.Name = "lowerReceiverLabel";
+            lowerReceiverLabel.Size = new Size(116, 21);
+            lowerReceiverLabel.TabIndex = 19;
+            lowerReceiverLabel.Text = "Lower Receiver";
+            // 
             // lowerReceiverTextBox
             // 
             lowerReceiverTextBox.AllowDrop = true;
@@ -326,6 +376,16 @@
             lowerReceiverTextBox.Tag = "LowerReceiver";
             lowerReceiverTextBox.DragDrop += partSlot_DragDrop;
             lowerReceiverTextBox.DragEnter += partSlot_DragEnter;
+            // 
+            // bufferTubeLabel
+            // 
+            bufferTubeLabel.AutoSize = true;
+            bufferTubeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            bufferTubeLabel.Location = new Point(20, 256);
+            bufferTubeLabel.Name = "bufferTubeLabel";
+            bufferTubeLabel.Size = new Size(90, 21);
+            bufferTubeLabel.TabIndex = 20;
+            bufferTubeLabel.Text = "Buffer Tube";
             // 
             // bufferTubeTextBox
             // 
@@ -339,6 +399,16 @@
             bufferTubeTextBox.DragDrop += partSlot_DragDrop;
             bufferTubeTextBox.DragEnter += partSlot_DragEnter;
             // 
+            // stockLabel
+            // 
+            stockLabel.AutoSize = true;
+            stockLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            stockLabel.Location = new Point(20, 336);
+            stockLabel.Name = "stockLabel";
+            stockLabel.Size = new Size(47, 21);
+            stockLabel.TabIndex = 21;
+            stockLabel.Text = "Stock";
+            // 
             // stockTextBox
             // 
             stockTextBox.AllowDrop = true;
@@ -351,6 +421,16 @@
             stockTextBox.DragDrop += partSlot_DragDrop;
             stockTextBox.DragEnter += partSlot_DragEnter;
             // 
+            // gripLabel
+            // 
+            gripLabel.AutoSize = true;
+            gripLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            gripLabel.Location = new Point(20, 416);
+            gripLabel.Name = "gripLabel";
+            gripLabel.Size = new Size(40, 21);
+            gripLabel.TabIndex = 22;
+            gripLabel.Text = "Grip";
+            // 
             // gripTextBox
             // 
             gripTextBox.AllowDrop = true;
@@ -362,6 +442,16 @@
             gripTextBox.Tag = "Grip";
             gripTextBox.DragDrop += partSlot_DragDrop;
             gripTextBox.DragEnter += partSlot_DragEnter;
+            // 
+            // triggerLabel
+            // 
+            triggerLabel.AutoSize = true;
+            triggerLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            triggerLabel.Location = new Point(20, 496);
+            triggerLabel.Name = "triggerLabel";
+            triggerLabel.Size = new Size(59, 21);
+            triggerLabel.TabIndex = 23;
+            triggerLabel.Text = "Trigger";
             // 
             // triggerTextBox
             // 
@@ -479,13 +569,5 @@
             repairTabPage.PerformLayout();
             ResumeLayout(false);
         }
-
-        private Label label7;
-        private Label label6;
-        private Label label5;
-        private Label label4;
-        private Label label3;
-        private Label label2;
-        private Label label1;
     }
 }

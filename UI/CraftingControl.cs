@@ -12,14 +12,14 @@ namespace PVRL
     {
         private List<Character> characters;
         private Vault vault;
-        private Dictionary<string, string> selectedParts;
+        private Dictionary<string, GunGeneration.GunPart> selectedParts;
 
         public CraftingControl(List<Character> characters, Vault vault)
         {
             InitializeComponent();
             this.characters = characters;
             this.vault = vault;
-            this.selectedParts = new Dictionary<string, string>
+            this.selectedParts = new Dictionary<string, GunGeneration.GunPart>
             {
                 { "UpperReceiver", null },
                 { "Barrel", null },
@@ -31,7 +31,7 @@ namespace PVRL
             };
 
             // Set background image
-            this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
+            //this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
             this.BackgroundImageLayout = ImageLayout.Stretch;
 
             LoadCharacters();
@@ -162,7 +162,8 @@ namespace PVRL
 
                 if (selectedCharacter.Gun != null && vault.HasPart(selectedPartType, selectedQuality))
                 {
-                    selectedCharacter.Gun.UpgradePart(vault.GetPart(selectedPartType, selectedQuality), selectedPartType);
+                    var part = vault.GetPart(selectedPartType, selectedQuality);
+                    selectedCharacter.Gun.UpgradePart(part, selectedPartType);
                     LoadCharacterGunDetails(selectedCharacter);
                     SaveCharacter(selectedCharacter);
                     SaveVault();
@@ -242,7 +243,7 @@ namespace PVRL
             foreach (var partType in selectedParts.Keys)
             {
                 var part = selectedParts[partType];
-                var quality = part.Split(' ')[1].TrimEnd(':');
+                var quality = part.Quality;
                 vault.RemovePart(partType, quality, part);
             }
         }
@@ -288,7 +289,7 @@ namespace PVRL
                 var slotType = slot.Tag.ToString();
                 if (slotType == partType)
                 {
-                    selectedParts[partType] = partInfo;
+                    selectedParts[partType] = GunGeneration.GunPart.FromString(partInfo);
                     slot.Text = partInfo;
                 }
                 else
@@ -308,13 +309,13 @@ namespace PVRL
             gripTextBox.Clear();
             triggerTextBox.Clear();
 
-            if (selectedParts["UpperReceiver"] != null) upperReceiverTextBox.Text = selectedParts["UpperReceiver"];
-            if (selectedParts["Barrel"] != null) barrelTextBox.Text = selectedParts["Barrel"];
-            if (selectedParts["LowerReceiver"] != null) lowerReceiverTextBox.Text = selectedParts["LowerReceiver"];
-            if (selectedParts["BufferTube"] != null) bufferTubeTextBox.Text = selectedParts["BufferTube"];
-            if (selectedParts["Stock"] != null) stockTextBox.Text = selectedParts["Stock"];
-            if (selectedParts["Grip"] != null) gripTextBox.Text = selectedParts["Grip"];
-            if (selectedParts["Trigger"] != null) triggerTextBox.Text = selectedParts["Trigger"];
+            if (selectedParts["UpperReceiver"] != null) upperReceiverTextBox.Text = selectedParts["UpperReceiver"].ToString();
+            if (selectedParts["Barrel"] != null) barrelTextBox.Text = selectedParts["Barrel"].ToString();
+            if (selectedParts["LowerReceiver"] != null) lowerReceiverTextBox.Text = selectedParts["LowerReceiver"].ToString();
+            if (selectedParts["BufferTube"] != null) bufferTubeTextBox.Text = selectedParts["BufferTube"].ToString();
+            if (selectedParts["Stock"] != null) stockTextBox.Text = selectedParts["Stock"].ToString();
+            if (selectedParts["Grip"] != null) gripTextBox.Text = selectedParts["Grip"].ToString();
+            if (selectedParts["Trigger"] != null) triggerTextBox.Text = selectedParts["Trigger"].ToString();
         }
 
         private void repairButton_Click(object sender, EventArgs e)

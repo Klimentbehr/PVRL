@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using PVRL.Functions;
-using WMPLib; // Add this namespace for Windows Media Player
+using WMPLib;
 
 namespace PVRL
 {
@@ -15,37 +16,80 @@ namespace PVRL
         private List<Character> characters;
         public Vault vault;
         private const string charactersDirectory = "Characters";
-        private WindowsMediaPlayer backgroundPlayer; // Add this field for background music
+        private WindowsMediaPlayer backgroundPlayer;
+        private BackgroundWorker backgroundWorker;
+        private BufferedGraphicsContext bufferedGraphicsContext;
+        private BufferedGraphics bufferedGraphics;
+
+        private Button inventoryButton;
+        private Button skillsButton;
+        private Button craftingButton;
+        private Button storeButton;
+        private Button returnHomeButton;
 
         public MainForm()
         {
             InitializeComponent();
-            DoubleBuffered = true;
+            DoubleBuffered = true; // Enable double buffering for the form
+            SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+            UpdateStyles();
+
+            bufferedGraphicsContext = BufferedGraphicsManager.Current;
+            bufferedGraphicsContext.MaximumBuffer = new Size(this.Width + 1, this.Height + 1);
+            bufferedGraphics = bufferedGraphicsContext.Allocate(this.CreateGraphics(), new Rectangle(0, 0, this.Width, this.Height));
+
             characters = new List<Character>();
             vault = new Vault();
 
-            // Initialize and play background music
-            InitializeBackgroundMusic();
+            InitializeBackgroundWorker();
+            InitializeManageCharacterControls();
 
-            // Load data asynchronously
             LoadDataAsync();
         }
 
-        private void InitializeBackgroundMusic()
+        protected override void OnPaint(PaintEventArgs e)
         {
-            backgroundPlayer = new WindowsMediaPlayer();
-            backgroundPlayer.URL = "E:\\Hitfromthebeast\\Hitfromthebeast.mp3"; // Replace with the path to your music file
-            backgroundPlayer.settings.setMode("loop", true); // Loop the music
-            backgroundPlayer.settings.volume = 30; // Set volume (0 to 100)
-            backgroundPlayer.controls.play();
+            bufferedGraphics.Render(e.Graphics);
         }
 
-        private async void LoadDataAsync()
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // Do nothing to prevent flickering
+        }
+
+        private void InitializeBackgroundWorker()
+        {
+            backgroundWorker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
+        }
+
+        private void LoadDataAsync()
+        {
+            if (!backgroundWorker.IsBusy)
+            {
+                backgroundWorker.RunWorkerAsync();
+            }
+        }
+
+        private async void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             await LoadCharactersAsync();
             LoadPlayerInventory();
-            InitializeManageCharacterControl(); // Initialize ManageCharacterControl with data
-            CenterControls();
+        }
+
+        private void BackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.Invoke(new Action(() =>
+            {
+                InitializeManageCharacterControl();
+                CenterControls();
+                this.Invalidate(); // Redraw the form
+            }));
         }
 
         private async Task LoadCharactersAsync()
@@ -62,13 +106,8 @@ namespace PVRL
 
                 var results = await Task.WhenAll(tasks);
 
-                foreach (var character in results)
-                {
-                    if (character != null)
-                    {
-                        characters.Add(character);
-                    }
-                }
+                characters.Clear();
+                characters.AddRange(results);
             }
             catch (Exception ex)
             {
@@ -111,6 +150,125 @@ namespace PVRL
             }
         }
 
+        private void InitializeManageCharacterControls()
+        {
+            inventoryButton = new Button { Text = "Inventory" };
+            skillsButton = new Button { Text = "Skills" };
+            craftingButton = new Button { Text = "Crafting" };
+            storeButton = new Button { Text = "Store" };
+            returnHomeButton = new Button { Text = "Return Home" };
+            characterCreationButton = new Button { Text = "Create Character" };
+            manageCharacterButton = new Button { Text = "Manage Character" };
+            playButton = new Button { Text = "Play" }; // Changed from pveButton to playButton
+            exitButton = new Button { Text = "Exit" };
+            label1 = new Label { Text = "Main Menu" };
+
+            inventoryButton.Click += InventoryButton_Click;
+            skillsButton.Click += SkillsButton_Click;
+            craftingButton.Click += CraftingButton_Click;
+            storeButton.Click += StoreButton_Click;
+            returnHomeButton.Click += ReturnHomeButton_Click;
+            characterCreationButton.Click += CharacterCreationButton_Click;
+            manageCharacterButton.Click += ManageCharacterButton_Click;
+            playButton.Click += PlayButton_Click; // Changed from pveButton to playButton
+            exitButton.Click += ExitButton_Click;
+
+            SetControlStyles(inventoryButton);
+            SetControlStyles(skillsButton);
+            SetControlStyles(craftingButton);
+            SetControlStyles(storeButton);
+            SetControlStyles(returnHomeButton);
+            SetControlStyles(characterCreationButton);
+            SetControlStyles(manageCharacterButton);
+            SetControlStyles(playButton); // Changed from pveButton to playButton
+            SetControlStyles(exitButton);
+
+            Controls.Add(inventoryButton);
+            Controls.Add(skillsButton);
+            Controls.Add(craftingButton);
+            Controls.Add(storeButton);
+            Controls.Add(returnHomeButton);
+            Controls.Add(characterCreationButton);
+            Controls.Add(manageCharacterButton);
+            Controls.Add(playButton); // Changed from pveButton to playButton
+            Controls.Add(exitButton);
+            Controls.Add(label1);
+
+            Resize += MainForm_Resize;
+            CenterControls();
+        }
+
+        private void SetControlStyles(Control control)
+        {
+            control.GetType().InvokeMember("SetStyle",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod,
+                null, control, new object[] { ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true });
+
+            control.GetType().InvokeMember("UpdateStyles",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod,
+                null, control, null);
+        }
+
+        private void InventoryButton_Click(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                InventoryForm inventoryForm = new InventoryForm(characters, vault);
+                inventoryForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage inventory.");
+            }
+        }
+
+        private void SkillsButton_Click(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
+                if (selectionForm.ShowDialog() == DialogResult.OK)
+                {
+                    Character selectedCharacter = selectionForm.SelectedCharacter;
+                    SkillForm skillsForm = new SkillForm(characters, selectedCharacter);
+                    skillsForm.ShowDialog();
+                }
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage skills.");
+            }
+        }
+
+        private void CraftingButton_Click(object sender, EventArgs e)
+        {
+            CraftingForm craftingForm = new CraftingForm(characters, vault);
+            craftingForm.ShowDialog();
+        }
+
+        private void StoreButton_Click(object sender, EventArgs e)
+        {
+            if (characters.Count > 0)
+            {
+                CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
+                if (selectionForm.ShowDialog() == DialogResult.OK)
+                {
+                    Character selectedCharacter = selectionForm.SelectedCharacter;
+                    StoreForm storeForm = new StoreForm(characters, selectedCharacter, vault);
+                    storeForm.ShowDialog();
+                }
+            }
+            else
+            {
+                MessageBox.Show("No characters available to manage store.");
+            }
+        }
+
+        private void ReturnHomeButton_Click(object sender, EventArgs e)
+        {
+            ReturnToHome();
+        }
+
         private void CharacterCreationButton_Click(object sender, EventArgs e)
         {
             var characterCreationForm = new CharacterCreationForm(vault, characters);
@@ -124,48 +282,21 @@ namespace PVRL
             mainTabControl.SelectedTab = manageCharacterTabPage;
         }
 
-        private void PveButton_Click(object sender, EventArgs e)
+        private void PlayButton_Click(object sender, EventArgs e)
         {
-            CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
-            if (selectionForm.ShowDialog() == DialogResult.OK)
+            if (characters.Count > 0)
             {
-                Character selectedCharacter = selectionForm.SelectedCharacter;
-                selectedCharacter.Health = 100; // Fully heal the player
-
-                // Show difficulty selection dialog
-                DifficultySelectionForm difficultySelectionForm = new DifficultySelectionForm();
-                if (difficultySelectionForm.ShowDialog() == DialogResult.OK)
+                CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
+                if (selectionForm.ShowDialog() == DialogResult.OK)
                 {
-                    DifficultyLevel difficulty = difficultySelectionForm.SelectedDifficulty;
-
-                    bool continueCombat = true;
-
-                    // Continue PvE combat until the player dies, closes the form, or loses the fight
-                    while (continueCombat && selectedCharacter.Health > 0)
-                    {
-                        using (CombatForm combatForm = new CombatForm(selectedCharacter, difficulty, vault))
-                        {
-                            combatForm.ShowDialog();
-
-                            if (!combatForm.PlayerWon || combatForm.DialogResult == DialogResult.Cancel)
-                            {
-                                continueCombat = false; // Exit the loop if the player lost or closed the form
-                            }
-                            else
-                            {
-                                int experienceGained = CalculateExperienceGained(selectedCharacter, difficulty);
-                                selectedCharacter.GainExperience(experienceGained);
-                                SaveCharacter(selectedCharacter); // Save character after gaining experience
-                            }
-                        }
-                    }
-
-                    // Inform the player if they were defeated
-                    if (selectedCharacter.Health <= 0)
-                    {
-                        MessageBox.Show("You have been defeated in PvE combat.");
-                    }
+                    Character selectedCharacter = selectionForm.SelectedCharacter;
+                    var factionHomeScreen = new FactionHomeScreen(selectedCharacter, vault);
+                    factionHomeScreen.ShowDialog();
                 }
+            }
+            else
+            {
+                MessageBox.Show("No characters available to play.");
             }
         }
 
@@ -207,6 +338,7 @@ namespace PVRL
 
         private void CenterControls()
         {
+            this.SuspendLayout();
             int centerX = this.ClientSize.Width / 2;
             int centerY = this.ClientSize.Height / 2;
 
@@ -216,25 +348,25 @@ namespace PVRL
 
             characterCreationButton.Size = new Size(buttonWidth, buttonHeight);
             manageCharacterButton.Size = new Size(buttonWidth, buttonHeight);
-            pveButton.Size = new Size(buttonWidth, buttonHeight);
+            playButton.Size = new Size(buttonWidth, buttonHeight); // Changed from pveButton to playButton
             exitButton.Size = new Size(buttonWidth, buttonHeight);
 
             characterCreationButton.Location = new Point(centerX - buttonWidth / 2, centerY - 2 * (buttonHeight + spacing));
             manageCharacterButton.Location = new Point(centerX - buttonWidth / 2, centerY - (buttonHeight + spacing / 2));
-            pveButton.Location = new Point(centerX - buttonWidth / 2, centerY + spacing / 2);
+            playButton.Location = new Point(centerX - buttonWidth / 2, centerY + spacing / 2); // Changed from pveButton to playButton
             exitButton.Location = new Point(centerX - buttonWidth / 2, centerY + buttonHeight + (int)(1.5 * spacing));
 
             int buttonFontSize = (int)(buttonHeight * 0.25); // Set font size to 25% of button height
             characterCreationButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
             manageCharacterButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
-            pveButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
+            playButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point); // Changed from pveButton to playButton
             exitButton.Font = new Font("Segoe UI", buttonFontSize, FontStyle.Regular, GraphicsUnit.Point);
 
             int labelFontSize = (int)(this.ClientSize.Width * 0.035); // Set font size based on window width
             label1.Font = new Font("Segoe UI", labelFontSize, FontStyle.Regular, GraphicsUnit.Point);
             label1.Location = new Point(centerX - label1.Width / 2, centerY - 3 * (buttonHeight + spacing) - label1.Height);
+            this.ResumeLayout(true);
         }
-
 
         public void ReturnToHome()
         {
@@ -263,8 +395,13 @@ namespace PVRL
         {
             if (characters.Count > 0)
             {
-                SkillForm skillsForm = new SkillForm(characters[0]);
-                skillsForm.ShowDialog();
+                CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
+                if (selectionForm.ShowDialog() == DialogResult.OK)
+                {
+                    Character selectedCharacter = selectionForm.SelectedCharacter;
+                    SkillForm skillsForm = new SkillForm(characters, selectedCharacter);
+                    skillsForm.ShowDialog();
+                }
             }
             else
             {
@@ -282,8 +419,13 @@ namespace PVRL
         {
             if (characters.Count > 0)
             {
-                StoreForm storeForm = new StoreForm(characters[0], vault);
-                storeForm.ShowDialog();
+                CharacterSelectionForm selectionForm = new CharacterSelectionForm(characters);
+                if (selectionForm.ShowDialog() == DialogResult.OK)
+                {
+                    Character selectedCharacter = selectionForm.SelectedCharacter;
+                    StoreForm storeForm = new StoreForm(characters, selectedCharacter, vault);
+                    storeForm.ShowDialog();
+                }
             }
             else
             {

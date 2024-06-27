@@ -21,8 +21,8 @@ namespace PVRL
             this.FormBorderStyle = FormBorderStyle.None;
 
             // Set background image
-            this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
-            this.BackgroundImageLayout = ImageLayout.Stretch;
+           // this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
+            //this.BackgroundImageLayout = ImageLayout.Stretch;
         }
 
         private void InitializeComponent()

@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using PVRL.Functions;
+﻿using PVRL.Functions;
+using System;
+using System.Collections.Generic;
 
 public class Character
 {
@@ -23,6 +24,14 @@ public class Character
     public int ExperiencePoints { get; set; }
     public int SkillPoints { get; set; }
     public int Level { get; set; }
+    public int SkillSeed { get; set; }
+    public float CriticalChance { get; set; }
+    public float DamageMultiplier { get; set; }
+    public float DamageReduction { get; set; }
+    public float HealingEffectiveness { get; set; }
+    public int Mana { get; set; }
+    public List<string> UnlockedSkills { get; set; } = new List<string>();
+    public string Faction { get; set; }
 
     public enum CharacterType
     {
@@ -45,6 +54,7 @@ public class Character
         Inventory = new List<GunGeneration.Gun>();
         HealingItems = new List<HealingItem>();
         Armors = new List<ArmorGeneration.Armor>();
+        SkillSeed = new Random().Next(); // Random seed for skill tree generation
     }
 
     public void GainExperience(int points)

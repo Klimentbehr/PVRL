@@ -11,27 +11,44 @@ namespace PVRL
 {
     public partial class StoreForm : Form
     {
-        private List<GunGeneration.Gun> gunsForSale;
+        private List<GunGeneration.Gun> lowTierGunsForSale;
+        private List<GunGeneration.Gun> midTierGunsForSale;
+        private List<GunGeneration.Gun> highTierGunsForSale;
         private List<ArmorGeneration.Armor> armorsForSale;
         private List<RepairKit> repairKitsForSale;
-        private Character player;
+        private List<Character> characters;
+        private Character selectedCharacter;
         private Vault vault;
+        private GunGeneration gunGenerator;
 
-        public StoreForm(Character player, Vault vault)
+        public StoreForm(List<Character> characters, Character selectedCharacter, Vault vault)
         {
             InitializeComponent();
-            this.player = player;
+            this.characters = characters;
+            this.selectedCharacter = selectedCharacter;
             this.vault = vault;
+            this.gunGenerator = new GunGeneration();
+            characterComboBox.SelectedIndexChanged += CharacterComboBox_SelectedIndexChanged;
+            PopulateCharacterComboBox();
+        }
 
-            // Set form to fullscreen
-            this.WindowState = FormWindowState.Maximized;
-            this.FormBorderStyle = FormBorderStyle.None;
+        private void PopulateCharacterComboBox()
+        {
+            characterComboBox.Items.Clear();
+            foreach (var character in characters)
+            {
+                characterComboBox.Items.Add(character.Name);
+            }
+            if (characters.Count > 0)
+            {
+                characterComboBox.SelectedIndex = 0; // Select the first character by default
+            }
+        }
 
-            // Set background image
-            this.BackgroundImage = Image.FromFile("C:\\Users\\emoco\\Downloads\\A_geometric_low-poly_background_for_PVRL_compatible_3k.png");
-            this.BackgroundImageLayout = ImageLayout.Stretch;
-
-            // Load data
+        private void CharacterComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedCharacterName = characterComboBox.SelectedItem.ToString();
+            selectedCharacter = characters.FirstOrDefault(c => c.Name == selectedCharacterName);
             LoadStoreData();
         }
 
@@ -49,21 +66,37 @@ namespace PVRL
 
         private void UpdateWalletLabel()
         {
-            walletLabel.Text = $"Wallet: {player.Wallet} credits";
+            walletLabel.Text = $"Wallet: {selectedCharacter.Wallet} credits";
         }
 
         private void LoadGunsForSale()
         {
             try
             {
-                gunsForSale = LoadGunsFromFile();
-                if (gunsForSale.Count > 10)
-                {
-                    gunsForSale = gunsForSale.OrderBy(x => Guid.NewGuid()).Take(10).ToList(); // Randomly select 10 guns
-                }
+                lowTierGunsForSale = LoadGunsFromFile(DifficultyLevel.Easy);
+                midTierGunsForSale = LoadGunsFromFile(DifficultyLevel.Normal);
+                highTierGunsForSale = LoadGunsFromFile(DifficultyLevel.Hard);
+
+                // Display only a limited number of guns from each tier
+                var displayedLowTierGuns = lowTierGunsForSale.OrderBy(x => Guid.NewGuid()).Take(5).ToList();
+                var displayedMidTierGuns = midTierGunsForSale.OrderBy(x => Guid.NewGuid()).Take(5).ToList();
+                var displayedHighTierGuns = highTierGunsForSale.OrderBy(x => Guid.NewGuid()).Take(5).ToList();
 
                 gunsListBox.Items.Clear();
-                foreach (var gun in gunsForSale)
+                gunsListBox.Items.Add("Low Tier Guns:");
+                foreach (var gun in displayedLowTierGuns)
+                {
+                    gunsListBox.Items.Add($"{gun.Name} - Price: {GetBuyingPrice(gun.Price):F2}");
+                }
+
+                gunsListBox.Items.Add("Mid Tier Guns:");
+                foreach (var gun in displayedMidTierGuns)
+                {
+                    gunsListBox.Items.Add($"{gun.Name} - Price: {GetBuyingPrice(gun.Price):F2}");
+                }
+
+                gunsListBox.Items.Add("High Tier Guns:");
+                foreach (var gun in displayedHighTierGuns)
                 {
                     gunsListBox.Items.Add($"{gun.Name} - Price: {GetBuyingPrice(gun.Price):F2}");
                 }
@@ -74,13 +107,19 @@ namespace PVRL
             }
         }
 
-        private List<GunGeneration.Gun> LoadGunsFromFile()
+        private List<GunGeneration.Gun> LoadGunsFromFile(DifficultyLevel difficulty)
         {
             List<GunGeneration.Gun> guns = new List<GunGeneration.Gun>();
             try
             {
-                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeneratedFiles", "Guns.txt");
-                if (File.Exists(filePath))
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeneratedFiles", $"Guns_{difficulty}.txt");
+                if (!File.Exists(filePath))
+                {
+                    // Generate and save 15 random guns using the existing gun generation system
+                    guns = GenerateRandomGuns(15, difficulty);
+                    SaveGunsToFile(guns, filePath);
+                }
+                else
                 {
                     string[] gunLines = File.ReadAllLines(filePath);
                     foreach (string line in gunLines)
@@ -95,16 +134,29 @@ namespace PVRL
                         }
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Guns.txt file not found.");
-                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading guns from file: {ex.Message}");
             }
             return guns;
+        }
+
+        private List<GunGeneration.Gun> GenerateRandomGuns(int numberOfGuns, DifficultyLevel difficulty)
+        {
+            List<GunGeneration.Gun> guns = new List<GunGeneration.Gun>();
+            for (int i = 0; i < numberOfGuns; i++)
+            {
+                var gun = gunGenerator.GenerateRandomGun(difficulty);
+                guns.Add(gun);
+            }
+            return guns;
+        }
+
+        private void SaveGunsToFile(List<GunGeneration.Gun> guns, string filePath)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            File.WriteAllLines(filePath, guns.Select(gun => JsonConvert.SerializeObject(gun)).ToArray());
         }
 
         private void LoadArmorsForSale()
@@ -128,7 +180,7 @@ namespace PVRL
         private void LoadPlayerGuns()
         {
             playerGunsListBox.Items.Clear();
-            foreach (var gun in player.Inventory)
+            foreach (var gun in selectedCharacter.Inventory)
             {
                 playerGunsListBox.Items.Add($"{gun.Name} - Sell Price: {GetSellingPrice(gun.Price):F2}");
             }
@@ -143,7 +195,7 @@ namespace PVRL
         private void LoadPlayerHealingItems()
         {
             playerHealingItemsListBox.Items.Clear();
-            foreach (var item in player.HealingItems)
+            foreach (var item in selectedCharacter.HealingItems)
             {
                 playerHealingItemsListBox.Items.Add($"{item.Name}");
             }
@@ -158,7 +210,7 @@ namespace PVRL
         private void LoadPlayerArmors()
         {
             playerArmorsListBox.Items.Clear();
-            foreach (var armor in player.Armors)
+            foreach (var armor in selectedCharacter.Armors)
             {
                 playerArmorsListBox.Items.Add($"{armor.Name} - Sell Price: {GetSellingPrice(armor.Price):F2}");
             }
@@ -172,9 +224,32 @@ namespace PVRL
 
         private void gunsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (gunsListBox.SelectedIndex >= 0)
+            int selectedIndex = gunsListBox.SelectedIndex;
+            if (selectedIndex < 0) return;
+
+            // Skip the "Low Tier Guns:", "Mid Tier Guns:", "High Tier Guns:" labels
+            if (selectedIndex == 0 || selectedIndex == 6 || selectedIndex == 12)
             {
-                var selectedGun = gunsForSale[gunsListBox.SelectedIndex];
+                gunDetailsTextBox.Clear();
+                return;
+            }
+
+            GunGeneration.Gun selectedGun = null;
+            if (selectedIndex > 0 && selectedIndex < 6)
+            {
+                selectedGun = lowTierGunsForSale[selectedIndex - 1];
+            }
+            else if (selectedIndex > 6 && selectedIndex < 12)
+            {
+                selectedGun = midTierGunsForSale[selectedIndex - 7];
+            }
+            else if (selectedIndex > 12)
+            {
+                selectedGun = highTierGunsForSale[selectedIndex - 13];
+            }
+
+            if (selectedGun != null)
+            {
                 gunDetailsTextBox.Text = selectedGun.ToString().Replace("\n", Environment.NewLine);
             }
         }
@@ -186,13 +261,13 @@ namespace PVRL
                 int selectedIndex = playerGunsListBox.SelectedIndex;
                 GunGeneration.Gun selectedGun;
 
-                if (selectedIndex < player.Inventory.Count)
+                if (selectedIndex < selectedCharacter.Inventory.Count)
                 {
-                    selectedGun = player.Inventory[selectedIndex];
+                    selectedGun = selectedCharacter.Inventory[selectedIndex];
                 }
                 else
                 {
-                    selectedIndex -= player.Inventory.Count;
+                    selectedIndex -= selectedCharacter.Inventory.Count;
                     selectedGun = vault.Guns[selectedIndex];
                 }
 
@@ -207,13 +282,13 @@ namespace PVRL
                 int selectedIndex = playerHealingItemsListBox.SelectedIndex;
                 HealingItem selectedItem;
 
-                if (selectedIndex < player.HealingItems.Count)
+                if (selectedIndex < selectedCharacter.HealingItems.Count)
                 {
-                    selectedItem = player.HealingItems[selectedIndex];
+                    selectedItem = selectedCharacter.HealingItems[selectedIndex];
                 }
                 else
                 {
-                    selectedIndex -= player.HealingItems.Count;
+                    selectedIndex -= selectedCharacter.HealingItems.Count;
                     selectedItem = vault.HealingItems[selectedIndex];
                 }
 
@@ -237,13 +312,13 @@ namespace PVRL
                 int selectedIndex = playerArmorsListBox.SelectedIndex;
                 ArmorGeneration.Armor selectedArmor;
 
-                if (selectedIndex < player.Armors.Count)
+                if (selectedIndex < selectedCharacter.Armors.Count)
                 {
-                    selectedArmor = player.Armors[selectedIndex];
+                    selectedArmor = selectedCharacter.Armors[selectedIndex];
                 }
                 else
                 {
-                    selectedIndex -= player.Armors.Count;
+                    selectedIndex -= selectedCharacter.Armors.Count;
                     selectedArmor = vault.Armors[selectedIndex];
                 }
 
@@ -253,25 +328,82 @@ namespace PVRL
 
         private void BuyGunButton_Click(object sender, EventArgs e)
         {
-            if (gunsListBox.SelectedIndex >= 0)
-            {
-                var selectedGun = gunsForSale[gunsListBox.SelectedIndex];
-                double finalPrice = GetBuyingPrice(selectedGun.Price);
+            if (gunsListBox.SelectedIndices.Count == 0) return;
 
-                if (player.Wallet >= (int)finalPrice)
+            double totalCost = 0;
+            List<GunGeneration.Gun> selectedGuns = new List<GunGeneration.Gun>();
+
+            foreach (int index in gunsListBox.SelectedIndices.Cast<int>().ToList())
+            {
+                int selectedIndex = index;
+                if (selectedIndex == 0 || selectedIndex == 6 || selectedIndex == 12) continue;
+
+                GunGeneration.Gun selectedGun = null;
+                if (selectedIndex > 0 && selectedIndex < 6)
                 {
-                    player.Wallet -= (int)finalPrice;
-                    player.Inventory.Add(selectedGun);
-                    gunsForSale.RemoveAt(gunsListBox.SelectedIndex);
-                    LoadGunsForSale();
-                    LoadPlayerGuns();
-                    UpdateWalletLabel();
-                    MessageBox.Show("Gun purchased successfully!");
+                    selectedGun = lowTierGunsForSale[selectedIndex - 1];
                 }
-                else
+                else if (selectedIndex > 6 && selectedIndex < 12)
                 {
-                    MessageBox.Show("Not enough credits!");
+                    selectedGun = midTierGunsForSale[selectedIndex - 7];
                 }
+                else if (selectedIndex > 12)
+                {
+                    selectedGun = highTierGunsForSale[selectedIndex - 13];
+                }
+
+                if (selectedGun != null)
+                {
+                    totalCost += GetBuyingPrice(selectedGun.Price);
+                    selectedGuns.Add(selectedGun);
+                }
+            }
+
+            if (selectedCharacter.Wallet >= (int)totalCost)
+            {
+                selectedCharacter.Wallet -= (int)totalCost;
+                selectedCharacter.Inventory.AddRange(selectedGuns);
+
+                List<GunGeneration.Gun> gunsToRemove = new List<GunGeneration.Gun>();
+                foreach (var gun in selectedGuns)
+                {
+                    if (lowTierGunsForSale.Contains(gun))
+                    {
+                        gunsToRemove.Add(gun);
+                    }
+                    else if (midTierGunsForSale.Contains(gun))
+                    {
+                        gunsToRemove.Add(gun);
+                    }
+                    else if (highTierGunsForSale.Contains(gun))
+                    {
+                        gunsToRemove.Add(gun);
+                    }
+                }
+                foreach (var gun in gunsToRemove)
+                {
+                    if (lowTierGunsForSale.Contains(gun))
+                    {
+                        lowTierGunsForSale.Remove(gun);
+                    }
+                    else if (midTierGunsForSale.Contains(gun))
+                    {
+                        midTierGunsForSale.Remove(gun);
+                    }
+                    else if (highTierGunsForSale.Contains(gun))
+                    {
+                        highTierGunsForSale.Remove(gun);
+                    }
+                }
+
+                LoadGunsForSale();
+                LoadPlayerGuns();
+                UpdateWalletLabel();
+                MessageBox.Show("Guns purchased successfully!");
+            }
+            else
+            {
+                MessageBox.Show("Not enough credits!");
             }
         }
 
@@ -302,10 +434,10 @@ namespace PVRL
         private void BuyHealingItem(HealingItem item)
         {
             double finalPrice = GetBuyingPrice(item.Price);
-            if (player.Wallet >= (int)finalPrice)
+            if (selectedCharacter.Wallet >= (int)finalPrice)
             {
-                player.Wallet -= (int)finalPrice;
-                player.HealingItems.Add(item);
+                selectedCharacter.Wallet -= (int)finalPrice;
+                selectedCharacter.HealingItems.Add(item);
                 UpdateWalletLabel();
                 MessageBox.Show($"You bought a {item.Name}!");
                 LoadPlayerHealingItems(); // Update the player's healing items list
@@ -318,83 +450,142 @@ namespace PVRL
 
         private void SellGunButton_Click(object sender, EventArgs e)
         {
-            if (playerGunsListBox.SelectedIndex >= 0)
+            if (playerGunsListBox.SelectedIndices.Count == 0) return;
+
+            double totalSellPrice = 0;
+            List<GunGeneration.Gun> selectedGuns = new List<GunGeneration.Gun>();
+
+            // Collect the indices in a list to avoid modifying the collection while iterating
+            var selectedIndices = playerGunsListBox.SelectedIndices.Cast<int>().ToList();
+
+            // Sort the indices in descending order to remove items without affecting the subsequent indices
+            selectedIndices.Sort((a, b) => b.CompareTo(a));
+
+            foreach (int index in selectedIndices)
             {
-                int selectedIndex = playerGunsListBox.SelectedIndex;
+                int selectedIndex = index;
                 GunGeneration.Gun selectedGun;
 
-                if (selectedIndex < player.Inventory.Count)
+                if (selectedIndex < selectedCharacter.Inventory.Count)
                 {
-                    selectedGun = player.Inventory[selectedIndex];
-                    player.Inventory.RemoveAt(selectedIndex);
+                    selectedGun = selectedCharacter.Inventory[selectedIndex];
+                    selectedCharacter.Inventory.RemoveAt(selectedIndex);
                 }
                 else
                 {
-                    selectedIndex -= player.Inventory.Count;
-                    selectedGun = vault.Guns[selectedIndex];
-                    vault.RemoveGun(selectedGun);
+                    selectedIndex -= selectedCharacter.Inventory.Count;
+                    if (selectedIndex < vault.Guns.Count)
+                    {
+                        selectedGun = vault.Guns[selectedIndex];
+                        vault.RemoveGun(selectedGun);
+                    }
+                    else
+                    {
+                        continue; // Skip if index is out of range
+                    }
                 }
 
-                player.Wallet += (int)GetSellingPrice(selectedGun.Price);
-                LoadPlayerGuns(); // Update the player's inventory and vault list
-                UpdateWalletLabel();
-                MessageBox.Show("Gun sold successfully!");
+                totalSellPrice += GetSellingPrice(selectedGun.Price);
+                selectedGuns.Add(selectedGun);
             }
+
+            selectedCharacter.Wallet += (int)totalSellPrice;
+            LoadPlayerGuns(); // Update the player's inventory and vault list
+            UpdateWalletLabel();
+            MessageBox.Show("Guns sold successfully!");
         }
 
         public void BuyArmorButton_Click(object sender, EventArgs e)
         {
-            if (armorsListBox.SelectedIndex >= 0)
-            {
-                var selectedArmor = armorsForSale[armorsListBox.SelectedIndex];
-                double finalPrice = GetBuyingPrice(selectedArmor.Price);
+            if (armorsListBox.SelectedIndices.Count == 0) return;
 
-                if (player.Wallet >= (int)finalPrice)
+            double totalCost = 0;
+            List<ArmorGeneration.Armor> selectedArmors = new List<ArmorGeneration.Armor>();
+
+            foreach (int index in armorsListBox.SelectedIndices.Cast<int>().ToList())
+            {
+                int selectedIndex = index;
+                var selectedArmor = armorsForSale[selectedIndex];
+                totalCost += GetBuyingPrice(selectedArmor.Price);
+                selectedArmors.Add(selectedArmor);
+            }
+
+            if (selectedCharacter.Wallet >= (int)totalCost)
+            {
+                selectedCharacter.Wallet -= (int)totalCost;
+                selectedCharacter.Armors.AddRange(selectedArmors);
+
+                List<ArmorGeneration.Armor> armorsToRemove = new List<ArmorGeneration.Armor>();
+                foreach (var armor in selectedArmors)
                 {
-                    player.Wallet -= (int)finalPrice;
-                    player.Armors.Add(selectedArmor);
-                    armorsForSale.RemoveAt(armorsListBox.SelectedIndex);
-                    LoadArmorsForSale();
-                    LoadPlayerArmors();
-                    UpdateWalletLabel();
-                    MessageBox.Show("Armor purchased successfully!");
+                    armorsToRemove.Add(armor);
                 }
-                else
+                foreach (var armor in armorsToRemove)
                 {
-                    MessageBox.Show("Not enough credits!");
+                    armorsForSale.Remove(armor);
                 }
+
+                LoadArmorsForSale();
+                LoadPlayerArmors();
+                UpdateWalletLabel();
+                MessageBox.Show("Armors purchased successfully!");
+            }
+            else
+            {
+                MessageBox.Show("Not enough credits!");
             }
         }
 
         public void SellArmorButton_Click(object sender, EventArgs e)
         {
-            if (playerArmorsListBox.SelectedIndex >= 0)
+            if (playerArmorsListBox.SelectedIndices.Count == 0) return;
+
+            double totalSellPrice = 0;
+            List<ArmorGeneration.Armor> selectedArmors = new List<ArmorGeneration.Armor>();
+
+            // Collect the indices in a list to avoid modifying the collection while iterating
+            var selectedIndices = playerArmorsListBox.SelectedIndices.Cast<int>().ToList();
+
+            // Sort the indices in descending order to remove items without affecting the subsequent indices
+            selectedIndices.Sort((a, b) => b.CompareTo(a));
+
+            foreach (int index in selectedIndices)
             {
-                int selectedIndex = playerArmorsListBox.SelectedIndex;
+                int selectedIndex = index;
                 ArmorGeneration.Armor selectedArmor;
 
-                if (selectedIndex < player.Armors.Count)
+                if (selectedIndex < selectedCharacter.Armors.Count)
                 {
-                    selectedArmor = player.Armors[selectedIndex];
-                    player.Armors.RemoveAt(selectedIndex);
+                    selectedArmor = selectedCharacter.Armors[selectedIndex];
+                    selectedCharacter.Armors.RemoveAt(selectedIndex);
                 }
                 else
                 {
-                    selectedIndex -= player.Armors.Count;
-                    selectedArmor = vault.Armors[selectedIndex];
-                    vault.RemoveArmor(selectedArmor);
+                    selectedIndex -= selectedCharacter.Armors.Count;
+                    if (selectedIndex < vault.Armors.Count)
+                    {
+                        selectedArmor = vault.Armors[selectedIndex];
+                        vault.RemoveArmor(selectedArmor);
+                    }
+                    else
+                    {
+                        continue; // Skip if index is out of range
+                    }
                 }
 
-                player.Wallet += (int)GetSellingPrice(selectedArmor.Price);
-                LoadPlayerArmors(); // Update the player's inventory and vault list
-                UpdateWalletLabel();
-                MessageBox.Show("Armor sold successfully!");
+                totalSellPrice += GetSellingPrice(selectedArmor.Price);
+                selectedArmors.Add(selectedArmor);
             }
+
+            selectedCharacter.Wallet += (int)totalSellPrice;
+            LoadPlayerArmors(); // Update the player's inventory and vault list
+            UpdateWalletLabel();
+            MessageBox.Show("Armors sold successfully!");
         }
 
         private double GetCharismaModifier()
         {
-            return 1 + (player.Charisma * 0.0025);
+            return 1 + (selectedCharacter.Charisma * 0.0025);
         }
 
         private double GetBuyingPrice(double basePrice)
@@ -406,7 +597,7 @@ namespace PVRL
         private double GetSellingPrice(double basePrice)
         {
             double modifier = GetCharismaModifier();
-            return basePrice * modifier;
+            return basePrice * modifier * 0.75; // Always sell for less than the buying price
         }
 
         private void closeButton_Click(object sender, EventArgs e)
